@@ -10,5 +10,5 @@ import (
 func TestLinuxImplementsReporter(t *testing.T) {
 	var l Reporter
 	l = &Linux{}
-	_ = l.Report([]string{})
+	t.Logf("%v", l)
 }
