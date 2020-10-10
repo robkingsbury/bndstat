@@ -6,12 +6,15 @@ import (
 	"time"
 )
 
+// Reporter is the interface implemented by types that report basic network
+// device throughput stats.
 type Reporter interface {
-	Report() []Stat
+	// Doc comment for Report
+	Report(devices []string) []Stat
 }
 
 type Stat struct {
-	Name    string
+	Name    string // Name is blahblah
 	BitsIn  int
 	BitsOut int
 	Elapsed time.Duration
