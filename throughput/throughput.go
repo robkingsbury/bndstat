@@ -43,7 +43,7 @@ func New() (Reporter, error) {
 	var r Reporter
 	switch runtime.GOOS {
 	case "linux":
-		r = newLinux()
+		r = NewLinux()
 	default:
 		return &NilReporter{}, fmt.Errorf("os %q not supported", runtime.GOOS)
 	}

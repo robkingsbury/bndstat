@@ -110,7 +110,7 @@ func TestParseNetDev(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			l := newLinux()
+			l := newUninitializedLinux()
 			got, err := l.parseNetDev(bytes.NewReader(test.input))
 
 			if test.errExpected && err == nil {

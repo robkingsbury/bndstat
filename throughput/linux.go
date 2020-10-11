@@ -10,10 +10,6 @@ import (
 	"github.com/golang/glog"
 )
 
-// Clever way to determine if the system is 64bit or not. Lifted from
-// https://stackoverflow.com/a/60319709.
-const is64Bit = uint64(^uintptr(0)) == ^uint64(0)
-
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
 	devices map[string]*deviceData
@@ -40,10 +36,17 @@ type singleRead struct {
 	bytesOut uint64
 }
 
-func newLinux() *Linux {
-	return &Linux{
-		devices: map[string]*deviceData{},
-	}
+// NewLinux returns a pointer to an initialized Linux.
+func NewLinux() *Linux {
+	// Call Report twice so that all default values are replaced by real values.
+	l := newUninitializedLinux()
+	l.Report()
+	l.Report()
+	return l
+}
+
+func newUninitializedLinux() *Linux {
+	return &Linux{devices: map[string]*deviceData{}}
 }
 
 func (l *Linux) Report() ([]*Stat, error) {
