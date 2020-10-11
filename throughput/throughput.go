@@ -22,13 +22,13 @@ type Stat struct {
 	// Name is device name.
 	Name string
 
-	// BitsIn is the count of inbound bits that passed through the interface since
-	// the last innvocation of Report().
-	BitsIn int
+	// BytesIn is the count of inbound Bytes that passed through the interface
+	// since the last innvocation of Report().
+	BytesIn int64
 
-	// BitsOut is the count of outbound bits that passed through the interface since
-	// the last innvocation of Report().
-	BitsOut int
+	// BytesOut is the count of outbound Bytes that passed through the interface
+	// since the last innvocation of Report().
+	BytesOut int64
 
 	// Elapsed is the amount of time that has elapsed since the last invocation of
 	// Report().
@@ -41,7 +41,6 @@ func New() (Reporter, error) {
 	glog.V(1).Infof("os is %q", runtime.GOOS)
 
 	var r Reporter
-
 	switch runtime.GOOS {
 	case "linux":
 		r = &Linux{}
