@@ -14,7 +14,7 @@ import (
 // device throughput stats.
 type Reporter interface {
 	// Report should return a slice of Stats for all discovered network devices.
-	Report() []Stat
+	Report() ([]*Stat, error)
 }
 
 // Stat reports data on how much traffic has passed through network devices.
@@ -43,9 +43,9 @@ func New() (Reporter, error) {
 	var r Reporter
 	switch runtime.GOOS {
 	case "linux":
-		r = &Linux{}
+		r = newLinux()
 	default:
-		return &Linux{}, fmt.Errorf("os %q not supported", runtime.GOOS)
+		return &NilReporter{}, fmt.Errorf("os %q not supported", runtime.GOOS)
 	}
 
 	// Call Report() to initialize the data but do not output anything.

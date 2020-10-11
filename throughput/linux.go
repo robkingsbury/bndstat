@@ -12,15 +12,13 @@ import (
 
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
-	devices []deviceData
+	devices map[string]*deviceData
 }
 
 // deviceData is the persistent data held in a Linux struct. When Report() is
 // called, it updates deviceData for all devices and returns []Stats from that
 // data.
 type deviceData struct {
-	name string
-
 	lastTime     time.Time
 	lastBytesIn  int64
 	lastBytesOut int64
@@ -38,13 +36,47 @@ type singleRead struct {
 	bytesOut int64
 }
 
-func (l *Linux) Report() []Stat {
-	return []Stat{}
+func newLinux() *Linux {
+	return &Linux{
+		devices: map[string]*deviceData{},
+	}
 }
 
-// read opens /proc/net/dev and updates the deviceData for all devices.
-func (l *Linux) read() error {
-	return nil
+func (l *Linux) Report() ([]*Stat, error) {
+	return []*Stat{}, nil
+}
+
+// update l.devices with info from a slice of singleReads.
+func (l *Linux) update(srs []*singleRead, now time.Time) {
+	for _, sr := range srs {
+		if _, exists := l.devices[sr.name]; !exists {
+			l.devices[sr.name] = &deviceData{}
+		}
+
+		d := l.devices[sr.name]
+
+		d.lastTime = d.currentTime
+		d.lastBytesIn = d.currentBytesIn
+		d.lastBytesOut = d.currentBytesOut
+
+		d.currentTime = now
+		d.currentBytesIn = sr.bytesIn
+		d.currentBytesOut = sr.bytesOut
+	}
+}
+
+// stats returns a slice of Stats from the data in l.devices.
+// TODO: finish this
+func (l *Linux) stats() []*Stat {
+	stats := []*Stat{}
+	for dev, data := range l.devices {
+		s := &Stat{
+			Name:    dev,
+			Elapsed: data.currentTime.Sub(data.lastTime),
+		}
+		stats = append(stats, s)
+	}
+	return stats
 }
 
 // parseNetDev expects the input byte slice to match the format in
