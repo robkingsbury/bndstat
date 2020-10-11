@@ -24,11 +24,11 @@ type Stat struct {
 
 	// BytesIn is the count of inbound Bytes that passed through the interface
 	// since the last innvocation of Report().
-	BytesIn int64
+	BytesIn uint64
 
 	// BytesOut is the count of outbound Bytes that passed through the interface
 	// since the last innvocation of Report().
-	BytesOut int64
+	BytesOut uint64
 
 	// Elapsed is the amount of time that has elapsed since the last invocation of
 	// Report().

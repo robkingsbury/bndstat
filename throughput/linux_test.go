@@ -54,6 +54,18 @@ func TestParseNetDev(t *testing.T) {
 			},
 		},
 		{
+			name:        "simple stats, one liner, maxint",
+			input:       []byte(`eth0: 18446744073709551615 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0`),
+			errExpected: false,
+			want: []*singleRead{
+				{
+					name:     "eth0",
+					bytesIn:  18446744073709551615,
+					bytesOut: 2,
+				},
+			},
+		},
+		{
 			name:        "real input, netDevInput1",
 			input:       netDevInput1,
 			errExpected: false,
@@ -84,6 +96,12 @@ func TestParseNetDev(t *testing.T) {
 		{
 			name:        "cannot parse trans int",
 			input:       []byte(`eth0: 1 0 0 0 0 0 0 0 2harris 0 0 0 0 0 0 0`),
+			errExpected: true,
+			want:        []*singleRead{},
+		},
+		{
+			name:        "maxuint64+1 error check",
+			input:       []byte(`eth0: 18446744073709551616 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0`),
 			errExpected: true,
 			want:        []*singleRead{},
 		},

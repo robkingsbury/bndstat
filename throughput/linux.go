@@ -10,6 +10,10 @@ import (
 	"github.com/golang/glog"
 )
 
+// Clever way to determine if the system is 64bit or not. Lifted from
+// https://stackoverflow.com/a/60319709.
+const is64Bit = uint64(^uintptr(0)) == ^uint64(0)
+
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
 	devices map[string]*deviceData
@@ -20,20 +24,20 @@ type Linux struct {
 // data.
 type deviceData struct {
 	lastTime     time.Time
-	lastBytesIn  int64
-	lastBytesOut int64
+	lastBytesIn  uint64
+	lastBytesOut uint64
 
 	currentTime     time.Time
-	currentBytesIn  int64
-	currentBytesOut int64
+	currentBytesIn  uint64
+	currentBytesOut uint64
 }
 
 // singleRead is the struct representing the bitsIn and bitsOut of a device at
 // one point in time.
 type singleRead struct {
 	name     string
-	bytesIn  int64
-	bytesOut int64
+	bytesIn  uint64
+	bytesOut uint64
 }
 
 func newLinux() *Linux {
@@ -99,7 +103,7 @@ func (l *Linux) parseNetDev(i io.Reader) ([]*singleRead, error) {
 			glog.V(2).Infof("bytesRecvStr for %s: %s", dev, bytesRecvStr)
 			glog.V(2).Infof("bytesTransStr for %s: %s", dev, bytesTransStr)
 
-			bytesRecv, err := strconv.Atoi(bytesRecvStr)
+			bytesRecv, err := strconv.ParseUint(bytesRecvStr, 10, 64)
 			if err != nil {
 				return []*singleRead{}, err
 			}
@@ -110,8 +114,8 @@ func (l *Linux) parseNetDev(i io.Reader) ([]*singleRead, error) {
 
 			sr := &singleRead{
 				name:     dev,
-				bytesIn:  int64(bytesRecv),
-				bytesOut: int64(bytesTrans),
+				bytesIn:  uint64(bytesRecv),
+				bytesOut: uint64(bytesTrans),
 			}
 			srs = append(srs, sr)
 		}
