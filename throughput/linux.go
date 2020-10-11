@@ -70,16 +70,19 @@ func (l *Linux) update(srs []*singleRead, now time.Time) {
 }
 
 // stats returns a slice of Stats from the data in l.devices.
-// TODO: finish this and don't forget about rollovers
 func (l *Linux) stats() []*Stat {
 	stats := []*Stat{}
+
 	for dev, data := range l.devices {
 		s := &Stat{
-			Name:    dev,
-			Elapsed: data.currentTime.Sub(data.lastTime),
+			Name:     dev,
+			Elapsed:  data.currentTime.Sub(data.lastTime),
+			BytesIn:  data.currentBytesIn - data.lastBytesIn,
+			BytesOut: data.currentBytesOut - data.lastBytesOut,
 		}
 		stats = append(stats, s)
 	}
+
 	return stats
 }
 

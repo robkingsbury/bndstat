@@ -2,6 +2,7 @@ package throughput
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 	"time"
 
@@ -244,6 +245,127 @@ func TestUpdate(t *testing.T) {
 			}
 			if !cmp.Equal(l.devices, test.want, o...) {
 				t.Errorf("\ngot %s\nwant %s\n", pretty.Sprint(l.devices), pretty.Sprint(test.want))
+			}
+		})
+	}
+}
+
+func TestStats(t *testing.T) {
+	tests := []struct {
+		name  string
+		state map[string]*deviceData
+		want  []*Stat
+	}{
+		{
+			name:  "trivial",
+			state: map[string]*deviceData{},
+			want:  []*Stat{},
+		},
+		{
+			name: "simple",
+			state: map[string]*deviceData{
+				"eth0": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     10,
+					lastBytesOut:    100,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  20,
+					currentBytesOut: 200,
+				},
+			},
+			want: []*Stat{
+				{
+					Name:     "eth0",
+					BytesIn:  10,
+					BytesOut: 100,
+					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+				},
+			},
+		},
+		{
+			name: "two devices",
+			state: map[string]*deviceData{
+				"eth0": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     10,
+					lastBytesOut:    100,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  20,
+					currentBytesOut: 200,
+				},
+				"eth1": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     1000,
+					lastBytesOut:    10000,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  2000,
+					currentBytesOut: 20000,
+				},
+			},
+			want: []*Stat{
+				{
+					Name:     "eth0",
+					BytesIn:  10,
+					BytesOut: 100,
+					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+				},
+				{
+					Name:     "eth1",
+					BytesIn:  1000,
+					BytesOut: 10000,
+					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+				},
+			},
+		},
+		{
+			name: "unsig 64-bit rollover",
+			state: map[string]*deviceData{
+				"eth0": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     18446744073709551615 - 10,
+					lastBytesOut:    0,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  9,
+					currentBytesOut: 0,
+				},
+			},
+			want: []*Stat{
+				{
+					Name:     "eth0",
+					BytesIn:  20,
+					BytesOut: 0,
+					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			l := &Linux{
+				devices: test.state,
+			}
+			got := l.stats()
+
+			// Define a less function to sort the stats slice, used with
+			// cmpopts.SortSlices().
+			less := func(x, y *Stat) bool {
+				return strings.Compare(x.Name, y.Name) < 0
+			}
+
+			o := []cmp.Option{
+				cmp.AllowUnexported(deviceData{}),
+				cmpopts.EquateEmpty(),
+				cmpopts.SortSlices(less),
+			}
+			if !cmp.Equal(got, test.want, o...) {
+				t.Errorf("\ngot %s\nwant %s\n", pretty.Sprint(got), pretty.Sprint(test.want))
+			}
+
+			// stats() should not change the state so check for that too.
+			if !cmp.Equal(l.devices, test.state, o...) {
+				t.Errorf("\nstate changed when it should not have: got %s\nwant %s\n",
+					pretty.Sprint(l.devices), pretty.Sprint(test.state))
 			}
 		})
 	}
