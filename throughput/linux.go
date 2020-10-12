@@ -3,6 +3,7 @@ package throughput
 import (
 	"bufio"
 	"io"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -41,8 +42,21 @@ func NewLinux() *Linux {
 	return &Linux{devices: map[string]*deviceData{}}
 }
 
+// Report reads /proc/net/dev, updates its internal state with the latest
+// counters, and returns a slice of Stats for all network devices.
 func (l *Linux) Report() ([]*Stat, error) {
-	return []*Stat{}, nil
+	p, err := os.Open("/proc/net/dev")
+	if err != nil {
+		return []*Stat{}, err
+	}
+
+	srs, err := l.parseNetDev(p)
+	if err != nil {
+		return []*Stat{}, err
+	}
+
+	l.update(srs, time.Now())
+	return l.stats(), nil
 }
 
 // update l.devices with info from a slice of singleReads.
