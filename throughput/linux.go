@@ -44,15 +44,15 @@ func NewLinux() *Linux {
 
 // Report reads /proc/net/dev, updates its internal state with the latest
 // counters, and returns a slice of Stats for all network devices.
-func (l *Linux) Report() ([]*Stat, error) {
+func (l *Linux) Report() (*Stats, error) {
 	p, err := os.Open("/proc/net/dev")
 	if err != nil {
-		return []*Stat{}, err
+		return &Stats{}, err
 	}
 
 	srs, err := l.parseNetDev(p)
 	if err != nil {
-		return []*Stat{}, err
+		return &Stats{}, err
 	}
 
 	l.update(srs, time.Now())
@@ -78,18 +78,19 @@ func (l *Linux) update(srs []*singleRead, now time.Time) {
 	}
 }
 
-// stats returns a slice of Stats from the data in l.devices.
-func (l *Linux) stats() []*Stat {
-	stats := []*Stat{}
+// stats returns a pointer to Stats from the data in l.devices.
+func (l *Linux) stats() *Stats {
+	stats := &Stats{
+		devices: map[string]*Stat{},
+	}
 
-	for dev, data := range l.devices {
+	for device, data := range l.devices {
 		s := &Stat{
-			Name:     dev,
-			Elapsed:  data.currentTime.Sub(data.lastTime),
-			BytesIn:  data.currentBytesIn - data.lastBytesIn,
-			BytesOut: data.currentBytesOut - data.lastBytesOut,
+			elapsed:  data.currentTime.Sub(data.lastTime),
+			bytesIn:  data.currentBytesIn - data.lastBytesIn,
+			bytesOut: data.currentBytesOut - data.lastBytesOut,
 		}
-		stats = append(stats, s)
+		stats.devices[device] = s
 	}
 
 	return stats

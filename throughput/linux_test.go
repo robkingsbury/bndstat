@@ -2,7 +2,6 @@ package throughput
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 	"time"
 
@@ -254,12 +253,12 @@ func TestStats(t *testing.T) {
 	tests := []struct {
 		name  string
 		state map[string]*deviceData
-		want  []*Stat
+		want  *Stats
 	}{
 		{
 			name:  "trivial",
 			state: map[string]*deviceData{},
-			want:  []*Stat{},
+			want:  &Stats{},
 		},
 		{
 			name: "simple",
@@ -273,12 +272,13 @@ func TestStats(t *testing.T) {
 					currentBytesOut: 200,
 				},
 			},
-			want: []*Stat{
-				{
-					Name:     "eth0",
-					BytesIn:  10,
-					BytesOut: 100,
-					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+			want: &Stats{
+				devices: map[string]*Stat{
+					"eth0": {
+						bytesIn:  10,
+						bytesOut: 100,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
 				},
 			},
 		},
@@ -302,18 +302,18 @@ func TestStats(t *testing.T) {
 					currentBytesOut: 20000,
 				},
 			},
-			want: []*Stat{
-				{
-					Name:     "eth0",
-					BytesIn:  10,
-					BytesOut: 100,
-					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
-				},
-				{
-					Name:     "eth1",
-					BytesIn:  1000,
-					BytesOut: 10000,
-					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+			want: &Stats{
+				devices: map[string]*Stat{
+					"eth0": {
+						bytesIn:  10,
+						bytesOut: 100,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+					"eth1": {
+						bytesIn:  1000,
+						bytesOut: 10000,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
 				},
 			},
 		},
@@ -329,12 +329,13 @@ func TestStats(t *testing.T) {
 					currentBytesOut: 0,
 				},
 			},
-			want: []*Stat{
-				{
-					Name:     "eth0",
-					BytesIn:  20,
-					BytesOut: 0,
-					Elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+			want: &Stats{
+				devices: map[string]*Stat{
+					"eth0": {
+						bytesIn:  20,
+						bytesOut: 0,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
 				},
 			},
 		},
@@ -347,16 +348,11 @@ func TestStats(t *testing.T) {
 			}
 			got := l.stats()
 
-			// Define a less function to sort the stats slice, used with
-			// cmpopts.SortSlices().
-			less := func(x, y *Stat) bool {
-				return strings.Compare(x.Name, y.Name) < 0
-			}
-
 			o := []cmp.Option{
 				cmp.AllowUnexported(deviceData{}),
+				cmp.AllowUnexported(Stats{}),
+				cmp.AllowUnexported(Stat{}),
 				cmpopts.EquateEmpty(),
-				cmpopts.SortSlices(less),
 			}
 			if !cmp.Equal(got, test.want, o...) {
 				t.Errorf("\ngot %s\nwant %s\n", pretty.Sprint(got), pretty.Sprint(test.want))

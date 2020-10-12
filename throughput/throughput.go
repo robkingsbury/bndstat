@@ -5,7 +5,6 @@ package throughput
 import (
 	"fmt"
 	"runtime"
-	"time"
 
 	"github.com/golang/glog"
 )
@@ -13,26 +12,9 @@ import (
 // Reporter is the interface implemented by types that report basic network
 // device throughput stats.
 type Reporter interface {
-	// Report should return a slice of Stats for all discovered network devices.
-	Report() ([]*Stat, error)
-}
-
-// Stat reports data on how much traffic has passed through network devices.
-type Stat struct {
-	// Name is device name.
-	Name string
-
-	// BytesIn is the count of inbound Bytes that passed through the interface
-	// since the last innvocation of Report().
-	BytesIn uint64
-
-	// BytesOut is the count of outbound Bytes that passed through the interface
-	// since the last innvocation of Report().
-	BytesOut uint64
-
-	// Elapsed is the amount of time that has elapsed since the last invocation of
-	// Report().
-	Elapsed time.Duration
+	// Report should return a pointer to a Stats struct containing data for all
+	// discovered network devices.
+	Report() (*Stats, error)
 }
 
 // New returns an initialized Reporter that's compatible with the current OS.
