@@ -33,8 +33,8 @@ func (u Unit) String() string {
 	}
 }
 
-// Stat reports data on how much traffic has passed through a network device.
-type Stat struct {
+// stat reports data on how much traffic has passed through a network device.
+type stat struct {
 	// bytesIn is the count of inbound Bytes that passed through the interface
 	// since the last innvocation of Report().
 	bytesIn uint64
@@ -50,7 +50,7 @@ type Stat struct {
 
 // Stats contains a Stat for each network device.
 type Stats struct {
-	devices map[string]*Stat
+	devices map[string]*stat
 }
 
 func (s *Stats) Avg(device string, unit Unit) (in float64, out float64, err error) {

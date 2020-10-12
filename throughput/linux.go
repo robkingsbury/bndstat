@@ -81,11 +81,11 @@ func (l *Linux) update(srs []*singleRead, now time.Time) {
 // stats returns a pointer to Stats from the data in l.devices.
 func (l *Linux) stats() *Stats {
 	stats := &Stats{
-		devices: map[string]*Stat{},
+		devices: map[string]*stat{},
 	}
 
 	for device, data := range l.devices {
-		s := &Stat{
+		s := &stat{
 			elapsed:  data.currentTime.Sub(data.lastTime),
 			bytesIn:  data.currentBytesIn - data.lastBytesIn,
 			bytesOut: data.currentBytesOut - data.lastBytesOut,

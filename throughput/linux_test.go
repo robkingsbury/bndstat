@@ -273,7 +273,7 @@ func TestStats(t *testing.T) {
 				},
 			},
 			want: &Stats{
-				devices: map[string]*Stat{
+				devices: map[string]*stat{
 					"eth0": {
 						bytesIn:  10,
 						bytesOut: 100,
@@ -303,7 +303,7 @@ func TestStats(t *testing.T) {
 				},
 			},
 			want: &Stats{
-				devices: map[string]*Stat{
+				devices: map[string]*stat{
 					"eth0": {
 						bytesIn:  10,
 						bytesOut: 100,
@@ -330,7 +330,7 @@ func TestStats(t *testing.T) {
 				},
 			},
 			want: &Stats{
-				devices: map[string]*Stat{
+				devices: map[string]*stat{
 					"eth0": {
 						bytesIn:  20,
 						bytesOut: 0,
@@ -351,7 +351,7 @@ func TestStats(t *testing.T) {
 			o := []cmp.Option{
 				cmp.AllowUnexported(deviceData{}),
 				cmp.AllowUnexported(Stats{}),
-				cmp.AllowUnexported(Stat{}),
+				cmp.AllowUnexported(stat{}),
 				cmpopts.EquateEmpty(),
 			}
 			if !cmp.Equal(got, test.want, o...) {
