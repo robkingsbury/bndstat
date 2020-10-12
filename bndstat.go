@@ -13,6 +13,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
+	"time"
 
 	"github.com/golang/glog"
 	"github.com/robkingsbury/bndstat/throughput"
@@ -39,6 +41,24 @@ func bndstat(devices []string) error {
 		return err
 	}
 
-	r.Report()
+	unit := throughput.Kbps
+
+	time.Sleep(time.Second)
+	for {
+		stats, err := r.Report()
+		if err != nil {
+			glog.Exitf("%s", err)
+		}
+
+		devices := stats.Devices()
+		sort.Strings(devices)
+
+		for _, dev := range devices {
+			in, out := stats.Avg(dev, unit)
+			glog.Infof("dev = %s, in = %.2f%s, out = %.2f%s", dev, in, unit, out, unit)
+		}
+
+		time.Sleep(3 * time.Second)
+	}
 	return nil
 }

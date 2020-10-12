@@ -1,7 +1,6 @@
 package throughput
 
 import (
-	"fmt"
 	"math"
 	"time"
 )
@@ -53,14 +52,25 @@ type Stats struct {
 	devices map[string]*stat
 }
 
-func (s *Stats) Avg(device string, unit Unit) (in float64, out float64, err error) {
+// Devices returns a slice of device names that Stats has information on.
+func (s *Stats) Devices() []string {
+	devices := []string{}
+	for k := range s.devices {
+		devices = append(devices, k)
+	}
+	return devices
+}
+
+// Avg returns the average throughput for the device, in the units specified.
+// If the device does not exist, zeros are returned.
+func (s *Stats) Avg(device string, unit Unit) (in float64, out float64) {
 	stat, ok := s.devices[device]
 	if !ok {
-		return 0, 0, fmt.Errorf("device %q not found", device)
+		return 0, 0
 	}
 
 	div := math.Pow(2, float64(unit))
 	in = (float64(stat.bytesIn) / div) / stat.elapsed.Seconds()
 	out = (float64(stat.bytesOut) / div) / stat.elapsed.Seconds()
-	return in, out, nil
+	return in, out
 }
