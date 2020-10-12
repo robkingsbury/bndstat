@@ -38,14 +38,6 @@ type singleRead struct {
 
 // NewLinux returns a pointer to an initialized Linux.
 func NewLinux() *Linux {
-	// Call Report twice so that all default values are replaced by real values.
-	l := newUninitializedLinux()
-	l.Report()
-	l.Report()
-	return l
-}
-
-func newUninitializedLinux() *Linux {
 	return &Linux{devices: map[string]*deviceData{}}
 }
 

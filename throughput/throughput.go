@@ -48,7 +48,9 @@ func New() (Reporter, error) {
 		return &NilReporter{}, fmt.Errorf("os %q not supported", runtime.GOOS)
 	}
 
-	// Call Report() to initialize the data but do not output anything.
+	// Call Report() twice to initialize the data, replacing all default values,
+	// but do not output anything.
+	r.Report()
 	r.Report()
 	return r, nil
 }
