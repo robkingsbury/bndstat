@@ -77,8 +77,8 @@ func (s *Stats) Avg(device string, unit Unit) (in float64, out float64) {
 	}
 
 	div := math.Pow(2, float64(unit))
-	in = (float64(stat.bytesIn) / div) / stat.elapsed.Seconds()
-	out = (float64(stat.bytesOut) / div) / stat.elapsed.Seconds()
+	in = (float64(stat.bytesIn*8) / div) / stat.elapsed.Seconds()
+	out = (float64(stat.bytesOut*8) / div) / stat.elapsed.Seconds()
 	return in, out
 }
 
