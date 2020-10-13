@@ -120,7 +120,7 @@ func (l *Linux) parseNetDev(i io.Reader) ([]*singleRead, error) {
 			if err != nil {
 				return []*singleRead{}, err
 			}
-			bytesTrans, err := strconv.Atoi(bytesTransStr)
+			bytesTrans, err := strconv.ParseUint(bytesTransStr, 10, 64)
 			if err != nil {
 				return []*singleRead{}, err
 			}
