@@ -52,11 +52,7 @@ func bndstat(devices []string) error {
 
 		devices := stats.Devices()
 		sort.Strings(devices)
-
-		for _, dev := range devices {
-			in, out := stats.Avg(dev, unit)
-			glog.Infof("dev = %s, in = %.2f%s, out = %.2f%s", dev, in, unit, out, unit)
-		}
+		stats.Table(devices, unit)
 
 		time.Sleep(3 * time.Second)
 	}
