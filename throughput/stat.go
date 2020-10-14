@@ -1,14 +1,8 @@
 package throughput
 
 import (
-	"fmt"
 	"math"
-	"os"
-	//"text/tabwriter"
 	"time"
-
-	"github.com/golang/glog"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 // A unit is used to format the value returned by Stat.Avg().
@@ -70,6 +64,8 @@ func (s *Stats) Devices() []string {
 
 // Avg returns the average throughput for the device, in the units specified.
 // If the device does not exist, zeros are returned.
+//
+// TODO: test needed
 func (s *Stats) Avg(device string, unit Unit) (in float64, out float64) {
 	stat, ok := s.devices[device]
 	if !ok {
@@ -80,52 +76,4 @@ func (s *Stats) Avg(device string, unit Unit) (in float64, out float64) {
 	in = (float64(stat.bytesIn*8) / div) / stat.elapsed.Seconds()
 	out = (float64(stat.bytesOut*8) / div) / stat.elapsed.Seconds()
 	return in, out
-}
-
-// Table outputs the average throughput of each device in an aligned,
-// absolutely gorgeous rendition of data, designed to instill feelings of joy
-// at the beauty in the world. Each time Table is called, the average
-// throughput since the last call to Table is printed to stdout.
-//
-// devices specifies a list of devices to output. unit specifies the unit to
-// use.
-func (s *Stats) Table(devices []string, unit Unit) error {
-	currentTerminal := int(os.Stdout.Fd())
-	if !terminal.IsTerminal(currentTerminal) {
-		return fmt.Errorf("stdout does not appear to be a terminal")
-	}
-
-	columns, rows, err := terminal.GetSize(currentTerminal)
-	if err != nil {
-		return fmt.Errorf("could not get terminal size: %s", err)
-	}
-	glog.V(2).Infof("columns = %d, rows = %d, tableLineCount = %d",
-		columns, rows, s.tableLineCount)
-
-	// Decide whether to print a header or not. Subtract 3 from row count so that
-	// labels aren't completed rolled off the screen.
-	if s.tableLineCount%(rows-3) == 0 {
-		for _, device := range devices {
-			fmt.Printf("%18s", device)
-			fmt.Printf("%5s", " ")
-		}
-		fmt.Printf("\n")
-
-		for range devices {
-			fmt.Printf("%11s %11s", "In", "Out")
-		}
-		fmt.Printf("\n")
-		s.tableLineCount += 2
-	}
-
-	for _, device := range devices {
-		in, out := s.Avg(device, unit)
-		fmt.Printf("%11s %11s",
-			fmt.Sprintf("%.2f", in),
-			fmt.Sprintf("%.2f", out))
-	}
-	fmt.Printf("\n")
-	s.tableLineCount++
-
-	return nil
 }

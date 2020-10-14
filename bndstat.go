@@ -36,6 +36,7 @@ func main() {
 }
 
 func bndstat(devices []string) error {
+	t := throughput.NewTable()
 	r, err := throughput.New()
 	if err != nil {
 		return err
@@ -52,7 +53,7 @@ func bndstat(devices []string) error {
 
 		devices := stats.Devices()
 		sort.Strings(devices)
-		stats.Table(devices, unit)
+		t.Write(stats, devices, unit)
 
 		time.Sleep(3 * time.Second)
 	}
