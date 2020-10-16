@@ -17,7 +17,7 @@ import (
 
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
-var intervalFlag = flag.Int("interval", 3, "period time between updates in `seconds`")
+var intervalFlag = flag.Float64("interval", 3.0, "period time between updates in `seconds`")
 
 func init() {
 	// Define a custom usage message that more pleasing to mine eye.
@@ -27,7 +27,9 @@ func init() {
 		u += "\n"
 		u += "Interval and count have the same behavior as the options of the same\n"
 		u += "name. However, when both an option and the non-option arg are present,\n"
-		u += "the value specified in the option takes precedence.\n"
+		u += "the value specified in the non-option arg takes precedence.\n"
+		u += "\n"
+		u += "Interval is specified as a float.\n"
 		u += "\n"
 		u += "Options:\n"
 		u += "  --interval=seconds    Number of seconds between updates\n"
@@ -59,7 +61,7 @@ func bndstat() error {
 	if err != nil {
 		return fmt.Errorf("error parsing options: %s", err)
 	}
-	glog.V(1).Infof("interval = %d, count = %d", interval, count)
+	glog.V(1).Infof("interval = %f, count = %d", interval, count)
 
 	unit := throughput.Kbps
 
@@ -70,20 +72,31 @@ func bndstat() error {
 
 	stats, err := r.Report()
 	if err != nil {
-		glog.Exitf("%s", err)
+		return err
 	}
 
 	t := throughput.NewTable()
-	t.Header(devices(stats.Devices()))
+	d := devices(stats.Devices())
+	sort.Strings(d)
+	t.Header(devices(d))
 
-	// Sleep for interval seconds to collect data for the initial output.
-	time.Sleep(time.Duration(interval) * time.Second)
+	// Calculate the intervalDuration by taking the input interval, converting it
+	// to milliseconds and parsing the result. Trying to case a float as a
+	// time.Duration doesn't work well because anything less than 1 is rounded
+	// down to zero, etc.
+	intervalDuration, err := time.ParseDuration(fmt.Sprintf("%dms", int(interval*1000)))
+	if err != nil {
+		return err
+	}
+
+	// Sleep for ian initial interval to collect data for the first output.
+	time.Sleep(intervalDuration)
 
 	updateCount := 1
 	for {
 		stats, err := r.Report()
 		if err != nil {
-			glog.Exitf("%s", err)
+			return err
 		}
 
 		d := devices(stats.Devices())
@@ -95,19 +108,19 @@ func bndstat() error {
 		}
 
 		updateCount++
-		time.Sleep(time.Duration(interval) * time.Second)
+		time.Sleep(intervalDuration)
 	}
 
 	return nil
 }
 
-func parseUnflaggedArgs(interval string, count string, intervalFlag int, countFlag int) (int, int, error) {
+func parseUnflaggedArgs(interval string, count string, intervalFlag float64, countFlag int) (float64, int, error) {
 	// If the unflagged interval is empty, return the flagged values.
 	if interval == "" {
 		return intervalFlag, countFlag, nil
 	}
 
-	i, err := strconv.Atoi(interval)
+	i, err := strconv.ParseFloat(interval, 64)
 	if err != nil {
 		return 0, 0, err
 	}
