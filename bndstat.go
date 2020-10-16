@@ -16,6 +16,7 @@ import (
 )
 
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
+var helpfull = flag.Bool("helpfull", false, "complete list of available cmdline options")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
 var intervalFlag = flag.Float64("interval", 3.0, "period time between updates in `seconds`")
 
@@ -34,15 +35,21 @@ func init() {
 		u += "Options:\n"
 		u += "  --interval=seconds    Number of seconds between updates\n"
 		u += "  --count=num           Number of updates to print, any num less than one\n"
-		u += "                          will output infinite updates until\n"
+		u += "                          will output infinite updates\n"
 		u += "  --devices=list        Comma separated list of devices to output; if empty,\n"
 		u += "                          all non-loopback devices are included\n"
+		u += "  --helpfull            List all available options\n"
 		fmt.Fprintf(flag.CommandLine.Output(), u)
 	}
 }
 
 func main() {
 	flag.Parse()
+
+	if *helpfull {
+		flag.PrintDefaults()
+		os.Exit(0)
+	}
 
 	if err := bndstat(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
