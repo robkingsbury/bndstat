@@ -24,6 +24,20 @@ import (
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
 var intervalFlag = flag.Int("interval", 3, "period time between updates in `seconds`")
 
+func init() {
+	// Define a custom usage message that more pleasing to mine eye.
+	flag.Usage = func() {
+		u := "Usage: bndstat [option]... [interval [count]]\n"
+		u += "Output the average throughput of network devices over an interval\n"
+		u += "\n"
+		u += "Options:\n"
+		u += "  --interval=seconds    Number of seconds between updates\n"
+		u += "  --count=num           Number of updates to print, any num less than one\n"
+		u += "                          will output infinite updates until \n"
+		fmt.Fprintf(flag.CommandLine.Output(), u)
+	}
+}
+
 func main() {
 	flag.Parse()
 
