@@ -54,25 +54,30 @@ func bndstat() error {
 	defer glog.Flush()
 
 	// Get the interval and count, which can be specified either as standard
-	// flags are unflagged args.
+	// flags or unflagged args.
 	interval, count, err := parseUnflaggedArgs(flag.Arg(0), flag.Arg(1), *intervalFlag, *countFlag)
 	if err != nil {
 		return fmt.Errorf("error parsing options: %s", err)
 	}
 	glog.V(1).Infof("interval = %d, count = %d", interval, count)
 
-	t := throughput.NewTable()
+	unit := throughput.Kbps
+
 	r, err := throughput.New()
 	if err != nil {
 		return err
 	}
 
-	unit := throughput.Kbps
-	devices := strings.Split(*devicesFlag, ",")
+	stats, err := r.Report()
+	if err != nil {
+		glog.Exitf("%s", err)
+	}
 
-	// Sleep for a small amount of time so that the first line output is not all
-	// zeros.
-	time.Sleep(10 * time.Millisecond)
+	t := throughput.NewTable()
+	t.Header(devices(stats.Devices()))
+
+	// Sleep for interval seconds to collect data for the initial output.
+	time.Sleep(time.Duration(interval) * time.Second)
 
 	updateCount := 1
 	for {
@@ -81,17 +86,9 @@ func bndstat() error {
 			glog.Exitf("%s", err)
 		}
 
-		if *devicesFlag == "" {
-			devices = []string{}
-			for _, d := range stats.Devices() {
-				if d != "lo" {
-					devices = append(devices, d)
-				}
-			}
-		}
-
-		sort.Strings(devices)
-		t.Write(stats, devices, unit)
+		d := devices(stats.Devices())
+		sort.Strings(d)
+		t.Write(stats, d, unit)
 
 		if count > 0 && updateCount >= count {
 			return nil
@@ -127,4 +124,17 @@ func parseUnflaggedArgs(interval string, count string, intervalFlag int, countFl
 	}
 
 	return i, c, nil
+}
+
+func devices(statDevices []string) []string {
+	devices := strings.Split(*devicesFlag, ",")
+	if *devicesFlag == "" {
+		devices = []string{}
+		for _, d := range statDevices {
+			if d != "lo" {
+				devices = append(devices, d)
+			}
+		}
+	}
+	return devices
 }
