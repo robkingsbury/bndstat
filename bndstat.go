@@ -1,5 +1,5 @@
 // Bndstat displays simple network device throughput data, inspired by unix
-// tools such as vmstat, iostat, mpstat, netstat, etc.
+// tools like vmstat, iostat, mpstat, netstat, etc.
 package main
 
 import (
@@ -21,7 +21,6 @@ var devicesFlag = flag.String("devices", "", "comma separated list of devices to
 var intervalFlag = flag.Float64("interval", 3.0, "period time between updates in `seconds`")
 
 func init() {
-	// Define a custom usage message that more pleasing to mine eye.
 	flag.Usage = func() {
 		u := "Usage: bndstat [option]... [interval [count]]\n"
 		u += "Output the average throughput of network devices over an interval.\n"
@@ -88,7 +87,7 @@ func bndstat() error {
 	t.Header(devices(d))
 
 	// Calculate the intervalDuration by taking the input interval, converting it
-	// to milliseconds and parsing the result. Trying to case a float as a
+	// to milliseconds and parsing the result. Trying to cast a float as a
 	// time.Duration doesn't work well because anything less than 1 is rounded
 	// down to zero, etc.
 	intervalDuration, err := time.ParseDuration(fmt.Sprintf("%dms", int(interval*1000)))
@@ -96,10 +95,10 @@ func bndstat() error {
 		return err
 	}
 
-	// Sleep for ian initial interval to collect data for the first output.
+	// Sleep for an initial interval to collect data for the first output.
 	time.Sleep(intervalDuration)
 
-	updateCount := 1
+	updateCount := 0
 	for {
 		stats, err := r.Report()
 		if err != nil {
@@ -109,12 +108,12 @@ func bndstat() error {
 		d := devices(stats.Devices())
 		sort.Strings(d)
 		t.Write(stats, d, unit)
+		updateCount++
 
 		if count > 0 && updateCount >= count {
 			return nil
 		}
 
-		updateCount++
 		time.Sleep(intervalDuration)
 	}
 

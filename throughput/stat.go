@@ -47,10 +47,9 @@ type stat struct {
 	elapsed time.Duration
 }
 
-// Stats contains a Stat for each network device.
+// Stats contains throughput data for each network device.
 type Stats struct {
-	devices        map[string]*stat // All the stats.
-	tableLineCount int              // Continuous count of lines output by Table().
+	devices map[string]*stat // All the stats.
 }
 
 // Devices returns a slice of device names that Stats has information on.

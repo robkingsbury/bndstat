@@ -29,7 +29,7 @@ type deviceData struct {
 	currentBytesOut uint64
 }
 
-// singleRead is the struct representing the bitsIn and bitsOut of a device at
+// singleRead is the struct representing the bytesIn and bytesOut of a device at
 // one point in time.
 type singleRead struct {
 	name     string

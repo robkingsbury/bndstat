@@ -8,8 +8,7 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-// Table contains state and a method to print device Stats in a nicely
-// formatted output.
+// Table is used to print device Stats in a nicely formatted output.
 type Table struct {
 	tableLineCount  int
 	prevDeviceCount int
