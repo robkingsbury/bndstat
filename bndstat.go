@@ -16,9 +16,10 @@ import (
 )
 
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
-var helpfull = flag.Bool("helpfull", false, "complete list of available cmdline options")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
-var intervalFlag = flag.Float64("interval", 3.0, "period time between updates in `seconds`")
+var helpfull = flag.Bool("helpfull", false, "complete list of available cmdline options")
+var intervalFlag = flag.Float64("interval", 1.0, "period time between updates in `seconds`")
+var unitFlag = flag.String("unit", "kbps", "the bits per second unit to use")
 
 func init() {
 	flag.Usage = func() {
@@ -29,15 +30,17 @@ func init() {
 		u += "name. However, when both an option and the non-option arg are present,\n"
 		u += "the value specified in the non-option arg takes precedence.\n"
 		u += "\n"
-		u += "Interval is specified as a float.\n"
+		u += "Interval is specified as a float for both the option and arg.\n"
 		u += "\n"
-		u += "Options:\n"
-		u += "  --interval=seconds    Number of seconds between updates\n"
+		u += "Options [default]:\n"
+		u += "  --interval=seconds    Number of seconds between updates [1.0]\n"
 		u += "  --count=num           Number of updates to print, any num less than one\n"
-		u += "                          will output infinite updates\n"
+		u += "                          will output infinite updates [0]\n"
 		u += "  --devices=list        Comma separated list of devices to output; if empty,\n"
-		u += "                          all non-loopback devices are included\n"
-		u += "  --helpfull            List all available options\n"
+		u += "                          all non-loopback devices are included [empty]\n"
+		u += "  --unit=string         Specify the output unit; is one of bps, kbps, mbps\n"
+		u += "                          or tbps; input is not case sensitive [kbps]\n"
+		u += "  --helpfull            List all available options [false]\n"
 		fmt.Fprintf(flag.CommandLine.Output(), u)
 	}
 }
@@ -69,7 +72,10 @@ func bndstat() error {
 	}
 	glog.V(1).Infof("interval = %f, count = %d", interval, count)
 
-	unit := throughput.Kbps
+	unit, err := throughput.ParseUnit(*unitFlag)
+	if err != nil {
+		return fmt.Errorf("bad unit specified: %s", err)
+	}
 
 	r, err := throughput.New()
 	if err != nil {

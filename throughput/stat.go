@@ -5,33 +5,6 @@ import (
 	"time"
 )
 
-// A unit is used to format the value returned by Stat.Avg().
-type Unit int
-
-const (
-	Bps  Unit = 1
-	Kbps Unit = 10
-	Mbps Unit = 20
-	Gbps Unit = 30
-	Tbps Unit = 40
-)
-
-// String implements Stringer for a Unit.
-func (u Unit) String() string {
-	switch u {
-	case Kbps:
-		return "kbps"
-	case Mbps:
-		return "mbps"
-	case Gbps:
-		return "gbps"
-	case Tbps:
-		return "tbps"
-	default:
-		return "bps"
-	}
-}
-
 // stat reports data on how much traffic has passed through a network device.
 type stat struct {
 	// bytesIn is the count of inbound Bytes that passed through the interface
