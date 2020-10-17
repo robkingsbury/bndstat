@@ -74,7 +74,7 @@ func bndstat() error {
 
 	unit, err := throughput.ParseUnit(*unitFlag)
 	if err != nil {
-		return fmt.Errorf("bad unit specified: %s", err)
+		return err
 	}
 
 	r, err := throughput.New()

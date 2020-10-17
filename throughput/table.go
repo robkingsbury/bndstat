@@ -62,6 +62,7 @@ func (t *Table) Write(stats *Stats, devices []string, unit Unit) error {
 	fmt.Printf("\n")
 	t.tableLineCount++
 
+	t.prevDeviceCount = len(devices)
 	return nil
 }
 
