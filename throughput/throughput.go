@@ -1,5 +1,27 @@
 // Package throughput provides an interface and implementations of that
 // interface to read the throughput of network devices.
+//
+// Synopsis
+//
+// A brief example of using the package to print throughput stats:
+//   package main
+//
+//   import (
+//     "github.com/robkingsbury/bndstat/throughput"
+//     "time"
+//   )
+//
+//   func main() {
+//     reporter, _ := throughput.NewReporter()
+//     table := throughput.NewTable()
+//
+//     for {
+//       stats, _ := reporter.Report()
+//       table.Write(stats, stats.Devices(), throughput.Kbps)
+//       time.Sleep(time.Second)
+//     }
+//   }
+// Note: throwing away errors is bad practice but is done here for brevity.
 package throughput
 
 import (

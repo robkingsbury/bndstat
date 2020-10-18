@@ -1,5 +1,16 @@
 // Bndstat displays simple network device throughput data, inspired by unix
 // tools like vmstat, iostat, mpstat, netstat, etc.
+//
+// Quick start:
+//
+//    $ git clone https://github.com/robkingsbury/bndstat
+//    $ cd bndstat
+//    $ go install
+//    $ bndstat 1
+//    $ bndstat --help
+//
+// See https://github.com/robkingsbury/bndstat for full documentation on
+// building and using the tool.
 package main
 
 import (
