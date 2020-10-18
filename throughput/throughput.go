@@ -17,9 +17,9 @@ type Reporter interface {
 	Report() (*Stats, error)
 }
 
-// New returns an initialized Reporter that's compatible with the current OS.
-// An error is returned if the OS is not supported.
-func New() (Reporter, error) {
+// NewReporter returns an initialized Reporter that's compatible with the
+// current OS. An error is returned if the OS is not supported.
+func NewReporter() (Reporter, error) {
 	glog.V(1).Infof("os is %q", runtime.GOOS)
 
 	var r Reporter

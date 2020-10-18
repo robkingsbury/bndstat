@@ -77,7 +77,7 @@ func bndstat() error {
 		return err
 	}
 
-	r, err := throughput.New()
+	r, err := throughput.NewReporter()
 	if err != nil {
 		return err
 	}
