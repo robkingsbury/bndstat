@@ -6,6 +6,9 @@ import (
 )
 
 // stat reports data on how much traffic has passed through a network device.
+//
+// TODO: add methods to extract timestamp and elapsed time, maybe include both
+//       start and end timestamps?
 type stat struct {
 	// bytesIn is the count of inbound Bytes that passed through the interface
 	// since the last innvocation of Report().
@@ -37,7 +40,7 @@ func (s *Stats) Devices() []string {
 // Avg returns the average throughput for the device, in the units specified.
 // If the device does not exist, zeros are returned.
 //
-// TODO: test needed
+// TODO: test needed, return error when no device found (don't be lazy)
 func (s *Stats) Avg(device string, unit Unit) (in float64, out float64) {
 	stat, ok := s.devices[device]
 	if !ok {
