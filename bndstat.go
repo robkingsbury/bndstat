@@ -35,11 +35,11 @@ var unitFlag = flag.String("unit", "kbps", "the bits per second unit to use")
 func init() {
 	flag.Usage = func() {
 		u := "Usage: bndstat [option]... [interval [count]]\n"
-		u += "Output the average throughput of network devices over an interval.\n"
+		u += "Output the average throughput of network devices over a time interval.\n"
 		u += "\n"
 		u += "Interval and count have the same behavior as the options of the same\n"
 		u += "name. However, when both an option and the non-option arg are present,\n"
-		u += "the value specified in the non-option arg takes precedence.\n"
+		u += "the value specified by the option takes precedence.\n"
 		u += "\n"
 		u += "Interval is specified as a float for both the option and arg.\n"
 		u += "\n"
@@ -77,7 +77,7 @@ func bndstat() error {
 
 	// Get the interval and count, which can be specified either as standard
 	// flags or unflagged args.
-	interval, count, err := parseUnflaggedArgs(flag.Arg(0), flag.Arg(1), *intervalFlag, *countFlag)
+	interval, count, err := parseUnflaggedArgs()
 	if err != nil {
 		return fmt.Errorf("error parsing options: %s", err)
 	}
@@ -137,29 +137,53 @@ func bndstat() error {
 	return nil
 }
 
-func parseUnflaggedArgs(interval string, count string, intervalFlag float64, countFlag int) (float64, int, error) {
-	// If the unflagged interval is empty, return the flagged values.
-	if interval == "" {
-		return intervalFlag, countFlag, nil
+// Returns the interval and count as specified on the cmdline. Since both of
+// these can be set as flag options or as unflagged args, this function returns
+// the prefered value if there is a conflict. When both the flagged and the
+// unflagged args are present, the flagged options take precedent.
+func parseUnflaggedArgs() (interval float64, count int, err error) {
+	intervalFlagSet := false
+	countFlagSet := false
+	flag.Visit(func(f *flag.Flag) {
+		switch f.Name {
+		case "interval":
+			intervalFlagSet = true
+		case "count":
+			countFlagSet = true
+		}
+	})
+
+	intervalArg := flag.Arg(0)
+	intervalArgSet := false
+	if intervalArg != "" {
+		intervalArgSet = true
 	}
 
-	i, err := strconv.ParseFloat(interval, 64)
-	if err != nil {
-		return 0, 0, err
+	countArg := flag.Arg(1)
+	countArgSet := false
+	if countArg != "" {
+		countArgSet = true
 	}
 
-	// If the unflagged count is empty, return the unflagged interval but the
-	// flagged count.
-	if count == "" {
-		return i, countFlag, nil
+	interval = *intervalFlag
+	if !intervalFlagSet && intervalArgSet {
+		i, err := strconv.ParseFloat(intervalArg, 64)
+		if err != nil {
+			return 0, 0, err
+		}
+		interval = i
 	}
 
-	c, err := strconv.Atoi(count)
-	if err != nil {
-		return 0, 0, err
+	count = *countFlag
+	if !countFlagSet && countArgSet {
+		c, err := strconv.Atoi(countArg)
+		if err != nil {
+			return 0, 0, err
+		}
+		count = c
 	}
 
-	return i, c, nil
+	return interval, count, nil
 }
 
 func devices(statDevices []string) []string {
