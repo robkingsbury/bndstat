@@ -139,7 +139,7 @@ func bndstat() error {
 
 // Returns the interval and count as specified on the cmdline. Since both of
 // these can be set as flag options or as unflagged args, this function returns
-// the prefered value if there is a conflict. When both the flagged and the
+// the preferred value if there is a conflict. When both the flagged and the
 // unflagged args are present, the flagged options take precedent.
 func parseUnflaggedArgs() (interval float64, count int, err error) {
 	intervalFlagSet := false
