@@ -2,7 +2,7 @@
 [![Actions Status](https://github.com/robkingsbury/bndstat/workflows/Build/badge.svg)](https://github.com/robkingsbury/bndstat/actions)
 [![Actions Status](https://github.com/robkingsbury/bndstat/workflows/Test/badge.svg)](https://github.com/robkingsbury/bndstat/actions)
 
-A simple Go program that displays throughput stats of each network interface.
+A simple Go program that displays throughput stats for network interfaces.
 
 ## Quickstart
 
@@ -35,6 +35,7 @@ Options [default]:
                           all non-loopback devices are included [empty]
   --unit=string         Specify the output unit; is one of bps, kbps, mbps
                           or tbps; input is not case sensitive [kbps]
+  --showunit            Show the --unit used in the output header [false]
   --helpfull            List all available options [false]
 ```
 
