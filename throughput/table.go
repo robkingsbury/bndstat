@@ -64,14 +64,15 @@ func (t *Table) Write(opt TableWriteOpts) error {
 	// labels aren't completed rolled off the screen.
 	glog.V(2).Infof("tableLineCount = %d, rows-3 = %d", t.tableLineCount, rows-3)
 	if t.tableLineCount%(rows-3) == 0 || deviceCountChanged {
-		t.Header(opt.Devices)
+		t.Header(opt.Devices, opt.Unit, opt.ShowUnit)
 	}
 
 	for _, device := range opt.Devices {
 		in, out := opt.Stats.Avg(device, opt.Unit)
 		fmt.Printf("%11s %11s",
 			fmt.Sprintf("%.2f", in),
-			fmt.Sprintf("%.2f", out))
+			fmt.Sprintf("%.2f", out),
+		)
 	}
 	fmt.Printf("\n")
 	t.tableLineCount++
@@ -81,12 +82,20 @@ func (t *Table) Write(opt TableWriteOpts) error {
 }
 
 // Header prints the table header lines only.
-func (t *Table) Header(devices []string) {
+func (t *Table) Header(devices []string, unit Unit, showunit bool) {
 	for _, device := range devices {
 		fmt.Printf("%18s", device)
 		fmt.Printf("%5s", " ")
 	}
 	fmt.Printf("\n")
+
+	if showunit {
+		for range devices {
+			fmt.Printf("%18s", unit)
+			fmt.Printf("%5s", " ")
+		}
+		fmt.Printf("\n")
+	}
 
 	for range devices {
 		fmt.Printf("%11s %11s", "In", "Out")

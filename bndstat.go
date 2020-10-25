@@ -28,8 +28,9 @@ import (
 
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
-var helpfull = flag.Bool("helpfull", false, "complete list of available cmdline options")
+var helpfullFlag = flag.Bool("helpfull", false, "complete list of available cmdline options")
 var intervalFlag = flag.Float64("interval", 1.0, "period time between updates in `seconds`")
+var showUnitFlag = flag.Bool("showunit", false, "show the units used in the output header")
 var unitFlag = flag.String("unit", "kbps", "the bits per second unit to use")
 
 func init() {
@@ -51,6 +52,7 @@ func init() {
 		u += "                          all non-loopback devices are included [empty]\n"
 		u += "  --unit=string         Specify the output unit; is one of bps, kbps, mbps\n"
 		u += "                          or tbps; input is not case sensitive [kbps]\n"
+		u += "  --showunit            Show the --unit used in the output header [false]\n"
 		u += "  --helpfull            List all available options [false]\n"
 		fmt.Fprintf(flag.CommandLine.Output(), u)
 	}
@@ -59,7 +61,7 @@ func init() {
 func main() {
 	flag.Parse()
 
-	if *helpfull {
+	if *helpfullFlag {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
@@ -101,7 +103,7 @@ func bndstat() error {
 	t := throughput.NewTable()
 	d := devices(stats.Devices())
 	sort.Strings(d)
-	t.Header(devices(d))
+	t.Header(devices(d), unit, *showUnitFlag)
 
 	// Calculate the intervalDuration by taking the input interval, converting it
 	// to milliseconds and parsing the result. Trying to cast a float as a
@@ -126,9 +128,10 @@ func bndstat() error {
 		sort.Strings(d)
 
 		t.Write(throughput.TableWriteOpts{
-			Stats:   stats,
-			Devices: d,
-			Unit:    unit,
+			Stats:    stats,
+			Devices:  d,
+			Unit:     unit,
+			ShowUnit: *showUnitFlag,
 		})
 		updateCount++
 
