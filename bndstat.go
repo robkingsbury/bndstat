@@ -5,9 +5,9 @@
 //
 //    $ git clone https://github.com/robkingsbury/bndstat
 //    $ cd bndstat
-//    $ go install
-//    $ bndstat 1
-//    $ bndstat --help
+//    $ go build
+//    $ ./bndstat
+//    $ ./bndstat --help
 //
 // See https://github.com/robkingsbury/bndstat for full documentation on
 // building and using the tool.
