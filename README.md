@@ -37,3 +37,8 @@ Options [default]:
                           or tbps; input is not case sensitive [kbps]
   --helpfull            List all available options [false]
 ```
+
+### Debug Logging
+If you want to see the innerworkings for `bndstat` while it's running, use these options from the glog package:
+
+ `bndstat --logtostderr --v=2`
