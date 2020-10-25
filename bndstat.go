@@ -124,7 +124,12 @@ func bndstat() error {
 
 		d := devices(stats.Devices())
 		sort.Strings(d)
-		t.Write(stats, d, unit)
+
+		t.Write(throughput.TableWriteOpts{
+			Stats:   stats,
+			Devices: d,
+			Unit:    unit,
+		})
 		updateCount++
 
 		if count > 0 && updateCount >= count {

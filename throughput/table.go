@@ -19,14 +19,28 @@ func NewTable() *Table {
 	return &Table{}
 }
 
+// TableWriteOpts is used to specify options by Table.Write().
+type TableWriteOpts struct {
+	// Stats should be a pointer to a Stats struct with network
+	// device throughput data.
+	Stats *Stats
+
+	// Devices is a slice of devices from Stats to display.
+	Devices []string
+
+	// Unit specifies the unit to use when display the throughput.
+	Unit Unit
+
+	// ShowUnit will print the unit type in the table header when set
+	// to true.
+	ShowUnit bool
+}
+
 // Write outputs the average throughput of each device in an aligned,
 // absolutely gorgeous rendition of data, designed to instill feelings of joy
 // at the beauty in the world. Each time Table is called, the average
 // throughput since the last call to Table is printed to stdout.
-//
-// devices specifies a list of devices to output. unit specifies the unit to
-// use.
-func (t *Table) Write(stats *Stats, devices []string, unit Unit) error {
+func (t *Table) Write(opt TableWriteOpts) error {
 	currentTerminal := int(os.Stdout.Fd())
 	if !terminal.IsTerminal(currentTerminal) {
 		return fmt.Errorf("stdout does not appear to be a terminal")
@@ -40,9 +54,9 @@ func (t *Table) Write(stats *Stats, devices []string, unit Unit) error {
 		columns, rows, t.tableLineCount)
 
 	deviceCountChanged := false
-	if len(devices) != t.prevDeviceCount {
+	if len(opt.Devices) != t.prevDeviceCount {
 		glog.V(1).Infof("Device count has changed from %d to %d",
-			t.prevDeviceCount, len(devices))
+			t.prevDeviceCount, len(opt.Devices))
 		deviceCountChanged = true
 	}
 
@@ -50,11 +64,11 @@ func (t *Table) Write(stats *Stats, devices []string, unit Unit) error {
 	// labels aren't completed rolled off the screen.
 	glog.V(2).Infof("tableLineCount = %d, rows-3 = %d", t.tableLineCount, rows-3)
 	if t.tableLineCount%(rows-3) == 0 || deviceCountChanged {
-		t.Header(devices)
+		t.Header(opt.Devices)
 	}
 
-	for _, device := range devices {
-		in, out := stats.Avg(device, unit)
+	for _, device := range opt.Devices {
+		in, out := opt.Stats.Avg(device, opt.Unit)
 		fmt.Printf("%11s %11s",
 			fmt.Sprintf("%.2f", in),
 			fmt.Sprintf("%.2f", out))
@@ -62,7 +76,7 @@ func (t *Table) Write(stats *Stats, devices []string, unit Unit) error {
 	fmt.Printf("\n")
 	t.tableLineCount++
 
-	t.prevDeviceCount = len(devices)
+	t.prevDeviceCount = len(opt.Devices)
 	return nil
 }
 
