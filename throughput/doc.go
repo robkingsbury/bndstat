@@ -13,6 +13,7 @@
 //   )
 //
 //   func main() {
+//     // Throwing away errors is bad practice but is done here for brevity.
 //     reporter, _ := throughput.NewReporter()
 //     table := throughput.NewTable()
 //
@@ -26,10 +27,14 @@
 //       }
 //
 //       // Using the builtin, aligned table output
-//       table.Write(stats, stats.Devices(), throughput.Kbps)
+//       table.Write(throughput.TableWriteOpts{
+//         Stats:    stats,
+//         Devices:  stats.Devices(),
+//         Unit:     throughput.Kbps,
+//         ShowUnit: false,
+//       })
 //
 //       time.Sleep(time.Second)
 //     }
 //   }
-// Note: throwing away errors is bad practice but is done here for brevity.
 package throughput
