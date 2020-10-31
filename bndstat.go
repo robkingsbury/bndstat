@@ -26,11 +26,15 @@ import (
 	"github.com/robkingsbury/bndstat/throughput"
 )
 
+// tag is used when printing version info
+var tag = "v0.4.1"
+
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
 var helpfullFlag = flag.Bool("helpfull", false, "complete list of available cmdline options")
 var intervalFlag = flag.Float64("interval", 1.0, "period time between updates in `seconds`")
 var showUnitFlag = flag.Bool("showunit", false, "show the units used in the output header")
+var versionFlag = flag.Bool("version", false, "print version information")
 var unitFlag = flag.String("unit", "kbps", "the bits per second unit to use")
 
 func init() {
@@ -53,6 +57,7 @@ func init() {
 		u += "  --unit=string         Specify the output unit; is one of bps, kbps, mbps\n"
 		u += "                          or tbps; input is not case sensitive [kbps]\n"
 		u += "  --showunit            Show the --unit used in the output header [false]\n"
+		u += "  --version             Print version information [false]\n"
 		u += "  --helpfull            List all available options [false]\n"
 		fmt.Fprintf(flag.CommandLine.Output(), u)
 	}
@@ -63,6 +68,11 @@ func main() {
 
 	if *helpfullFlag {
 		flag.PrintDefaults()
+		os.Exit(0)
+	}
+
+	if *versionFlag {
+		printVersionInfo()
 		os.Exit(0)
 	}
 
@@ -205,4 +215,11 @@ func devices(statDevices []string) []string {
 		}
 	}
 	return devices
+}
+
+func printVersionInfo() {
+	v := fmt.Sprintf("bndstat %s\n", tag)
+	v += "Rob Kingsbury\n"
+	v += "https://github.com/robkingsbury/bndstat\n"
+	fmt.Printf("%s", v)
 }
