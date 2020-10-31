@@ -142,3 +142,7 @@ I1025 16:04:20.357719    8592 table.go:53] columns = 243, rows = 88, tableLineCo
 I1025 16:04:20.357784    8592 table.go:65] tableLineCount = 2, rows-3 = 85
     1719.67     2414.75    2370.05     1734.02       0.37        0.42       0.00        0.00
 ```
+
+## Supported Platforms
+
+As of v0.4.0, only Linux is supported. The Linux library relies on information from /proc/net/dev so it *should* work on most Linux systems. Very long device names would probably make the output look a little wonky since the column width is static right now.
