@@ -36,6 +36,7 @@ Options [default]:
   --unit=string         Specify the output unit; is one of bps, kbps, mbps
                           or tbps; input is not case sensitive [kbps]
   --showunit            Show the --unit used in the output header [false]
+  --version             Print version information [false]
   --helpfull            List all available options [false]
 ```
 
