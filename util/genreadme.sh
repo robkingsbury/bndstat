@@ -1,0 +1,57 @@
+#!/bin/bash
+
+template="README.md.template"
+templatetmp="/tmp/${template}"
+
+# Define function to execute cmds and save output in a var, with the cmd itself
+# and markdown backticks included in the output.
+output=""
+cmdOutput() {
+  local cmd=${1}
+
+  output='```\n'
+  output+="\$ "
+  output+=$(echo ${cmd})
+  output+="\n"
+  output+=$(${cmd} 2>&1)
+  output+='\n```\n'
+}
+
+# Define function to iterate line by line over a string, substituting the
+# third input string for the second when encountered. Output is saved in the
+# defined var.
+subout=""
+substitute() {
+  local template="${1}"
+  local to_be_replaced="${2}"
+  local replacement="${3}"
+
+  echo "Replacing ${to_be_replaced}"
+
+  subout=""
+  while IFS= read -r line; do
+    if [ "${line}" == "${to_be_replaced}" ];
+    then
+      subout+="${replacement}"
+    else
+      subout+="${line}"
+      subout+="\n"
+    fi
+  done <<< "$template"
+}
+
+t=$(cat ${template})
+
+echo "Generating help ..."
+cmd="bndstat --help"
+cmdOutput "${cmd}"
+substitute "${t}" "HELPOUTPUT" "${output}"
+t=$(echo -e "${subout}")
+
+echo "Generating example one ..."
+cmd="bndstat 3 5"
+cmdOutput "${cmd}"
+substitute "${t}" "EXAMPLEONE" "${output}"
+t=$(echo -e "${subout}")
+
+echo -e "${t}" > /tmp/a
