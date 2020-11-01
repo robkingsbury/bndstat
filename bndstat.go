@@ -100,6 +100,15 @@ func bndstat() error {
 		return err
 	}
 
+	// Calculate the intervalDuration by taking the input interval, converting it
+	// to milliseconds and parsing the result. Trying to cast a float as a
+	// time.Duration doesn't work well because anything less than 1 is rounded
+	// down to zero, etc.
+	intervalDuration, err := time.ParseDuration(fmt.Sprintf("%dms", int(interval*1000)))
+	if err != nil {
+		return err
+	}
+
 	r, err := throughput.NewReporter()
 	if err != nil {
 		return err
@@ -114,15 +123,6 @@ func bndstat() error {
 	d := devices(stats.Devices())
 	sort.Strings(d)
 	t.Header(devices(d), unit, *showUnitFlag)
-
-	// Calculate the intervalDuration by taking the input interval, converting it
-	// to milliseconds and parsing the result. Trying to cast a float as a
-	// time.Duration doesn't work well because anything less than 1 is rounded
-	// down to zero, etc.
-	intervalDuration, err := time.ParseDuration(fmt.Sprintf("%dms", int(interval*1000)))
-	if err != nil {
-		return err
-	}
 
 	// Sleep for an initial interval to collect data for the first output.
 	time.Sleep(intervalDuration)
