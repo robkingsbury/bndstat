@@ -41,17 +41,21 @@ type TableWriteOpts struct {
 // at the beauty in the world. Each time Table is called, the average
 // throughput since the last call to Table is printed to stdout.
 func (t *Table) Write(opt TableWriteOpts) error {
-	currentTerminal := int(os.Stdout.Fd())
-	if !terminal.IsTerminal(currentTerminal) {
-		return fmt.Errorf("stdout does not appear to be a terminal")
-	}
+	// The default value for rows is used when stdout is not a terminal, like
+	// when it's being piped to a file or another program.
+	rows := 40
 
-	columns, rows, err := terminal.GetSize(currentTerminal)
-	if err != nil {
-		return fmt.Errorf("could not get terminal size: %s", err)
+	// Set rows to the actual value if stdout is a terminal.
+	stdout := int(os.Stdout.Fd())
+	if terminal.IsTerminal(stdout) {
+		_, rowsFromTerm, err := terminal.GetSize(stdout)
+		if err != nil {
+			return fmt.Errorf("could not get terminal size: %s", err)
+		}
+		glog.V(2).Infof("setting rows from terminal size: %d", rowsFromTerm)
+		rows = rowsFromTerm
 	}
-	glog.V(2).Infof("columns = %d, rows = %d, tableLineCount = %d",
-		columns, rows, t.tableLineCount)
+	glog.V(2).Infof("rows = %d, tableLineCount = %d", rows, t.tableLineCount)
 
 	deviceCountChanged := false
 	if len(opt.Devices) != t.prevDeviceCount {
