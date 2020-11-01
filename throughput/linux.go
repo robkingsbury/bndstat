@@ -62,6 +62,8 @@ func (l *Linux) Report() (*Stats, error) {
 // update l.devices with info from a slice of singleReads.
 func (l *Linux) update(srs []*singleRead, now time.Time) {
 	for _, sr := range srs {
+		glog.V(1).Infof("updating state for %s", sr.name)
+
 		if _, exists := l.devices[sr.name]; !exists {
 			l.devices[sr.name] = &deviceData{}
 		}

@@ -30,7 +30,13 @@ func NewReporter() (Reporter, error) {
 
 	// Call Report() twice to initialize the data, replacing all default values,
 	// but do not output anything.
+	glog.V(1).Info("running Reporter.Report() twice to prime the stats")
+
+	glog.V(1).Info("prime 1")
 	r.Report()
+
+	glog.V(1).Info("prime 2")
 	r.Report()
+
 	return r, nil
 }
