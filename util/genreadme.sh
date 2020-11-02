@@ -38,6 +38,12 @@ substitute() {
   done <<< "$template"
 }
 
+# Rebuild the binary
+echo "Building the binary ..."
+pushd ..
+go install
+popd
+
 t=$(cat ${template})
 
 echo "Generating help ..."
