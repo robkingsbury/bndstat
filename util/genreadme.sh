@@ -3,8 +3,8 @@
 template="README.md.template"
 readme="../README.md"
 
-# Define function to execute cmds and save output in a var, with the cmd itself
-# and markdown backticks included in the output.
+# Execute cmds and save output in a var, with the cmd itself and markdown
+# backticks included in the output.
 output=""
 cmdOutput() {
   local cmd=${1}
@@ -17,9 +17,8 @@ cmdOutput() {
   output+='\n```\n'
 }
 
-# Define function to iterate line by line over a string, substituting the
-# third input string for the second when encountered. Output is saved in the
-# defined var.
+# Iterate line by line over a string, substituting the third input string for
+# the second when encountered. Output is saved in the defined var.
 subout=""
 substitute() {
   local template="${1}"
@@ -38,7 +37,8 @@ substitute() {
   done <<< "$template"
 }
 
-# Rebuild the binary
+# Rebuild the binary just in case something has been updated and should be
+# reflected in the output.
 echo "Building the binary ..."
 pushd ..
 go install
