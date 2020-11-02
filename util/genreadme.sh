@@ -64,4 +64,10 @@ cmdOutput "${cmd}"
 substitute "${t}" "DEBUGEXAMPLE" "${output}"
 t=$(echo -e "${subout}")
 
+echo "Generating version ..."
+cmd="bndstat --version"
+cmdOutput "${cmd}"
+substitute "${t}" "VERSION" "${output}"
+t=$(echo -e "${subout}")
+
 echo -e "${t}" > ${readme}
