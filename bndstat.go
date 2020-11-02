@@ -27,7 +27,7 @@ import (
 )
 
 // tag is used when printing version info
-var tag = "v0.4.1"
+var tag = "v0.4.2"
 
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
