@@ -22,7 +22,7 @@ VERSION
 
 HELPOUTPUT
 
-### Example
+### Examples
 
 In this example, running on a raspberry pi that I am using as a router, eth0 is the hardline connection to wifi router, eth1 is my
 primary internet provider, eth2 is my backup internet line and wlan0 is a connection to the wifi network:
