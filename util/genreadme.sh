@@ -1,7 +1,7 @@
 #!/bin/bash
 
 template="README.md.template"
-templatetmp="/tmp/${template}"
+readme="../README.md"
 
 # Define function to execute cmds and save output in a var, with the cmd itself
 # and markdown backticks included in the output.
@@ -25,8 +25,6 @@ substitute() {
   local template="${1}"
   local to_be_replaced="${2}"
   local replacement="${3}"
-
-  echo "Replacing ${to_be_replaced}"
 
   subout=""
   while IFS= read -r line; do
@@ -54,4 +52,16 @@ cmdOutput "${cmd}"
 substitute "${t}" "EXAMPLEONE" "${output}"
 t=$(echo -e "${subout}")
 
-echo -e "${t}" > /tmp/a
+echo "Generating example two ..."
+cmd="bndstat --devices=eth1,eth2 --interval=1 --count=5"
+cmdOutput "${cmd}"
+substitute "${t}" "EXAMPLETWO" "${output}"
+t=$(echo -e "${subout}")
+
+echo "Generating debug example ..."
+cmd="bndstat --logtostderr --v=2 --count=1"
+cmdOutput "${cmd}"
+substitute "${t}" "DEBUGEXAMPLE" "${output}"
+t=$(echo -e "${subout}")
+
+echo -e "${t}" > ${readme}
