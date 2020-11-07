@@ -8,6 +8,6 @@ import (
 type NilReporter struct{}
 
 // Report always returns an empty Stat slice and an error.
-func (n *NilReporter) Report() (*Stats, error) {
+func (*NilReporter) Report() (*Stats, error) {
 	return &Stats{}, errors.New("cannot report on a nil reporter")
 }
