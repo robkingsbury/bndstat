@@ -22,6 +22,6 @@ func TestUnits(t *testing.T) {
 
 func TestBadUnit(t *testing.T) {
 	if _, err := ParseUnit("a bad unit string"); err == nil {
-		t.Errorf("ParseUnit() should return an error wiwht a bad unit string")
+		t.Errorf("ParseUnit() should return an error when passed a bad unit string")
 	}
 }
