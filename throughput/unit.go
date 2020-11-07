@@ -16,6 +16,8 @@ const (
 	Tbps Unit = 40
 )
 
+var allUnits = []Unit{Bps, Kbps, Mbps, Gbps, Tbps}
+
 // String implements Stringer for a Unit.
 func (u Unit) String() string {
 	switch u {
