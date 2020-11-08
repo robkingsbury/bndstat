@@ -22,7 +22,7 @@
 //
 //       // Directly accessing device stats
 //       for _, device := range stats.Devices() {
-//         in, out := stats.Avg(device, throughput.Kbps)
+//         in, out, _ := stats.Avg(device, throughput.Kbps)
 //         fmt.Printf("%s: in = %.2f, out = %.2f\n", device, in, out)
 //       }
 //

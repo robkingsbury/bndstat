@@ -72,7 +72,11 @@ func (t *Table) Write(opt TableWriteOpts) error {
 	}
 
 	for _, device := range opt.Devices {
-		in, out := opt.Stats.Avg(device, opt.Unit)
+		in, out, err := opt.Stats.Avg(device, opt.Unit)
+		if err != nil {
+			return err
+		}
+
 		fmt.Printf("%11s %11s",
 			fmt.Sprintf("%.2f", in),
 			fmt.Sprintf("%.2f", out),
