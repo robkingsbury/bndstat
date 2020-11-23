@@ -225,10 +225,9 @@ func devices(statDevices []string) []string {
 }
 
 func printVersionInfo() {
-	v := "bndstat\n"
+	v := fmt.Sprintf("bndstat %s\n", noSetTags(tags))
 	v += "Rob Kingsbury\n"
 	v += "https://github.com/robkingsbury/bndstat\n"
-	v += fmt.Sprintf("Tags: %s\n", noSet(tags))
 	v += fmt.Sprintf("Commit: %s\n", noSet(commit))
 	v += fmt.Sprintf("Compiled: %s\n", noSet(compileTime))
 	v += fmt.Sprintf("Build Host: %s\n", noSet(buildHost))
@@ -242,4 +241,11 @@ func noSet(f string) string {
 		return "not set"
 	}
 	return f
+}
+
+func noSetTags(t string) string {
+	if t == "" {
+		return "(untagged version)"
+	}
+	return strings.ReplaceAll(t, "\n", " ")
 }
