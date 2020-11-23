@@ -4,10 +4,10 @@
 // Quick start:
 //
 //    $ git clone https://github.com/robkingsbury/bndstat
-//    $ cd bndstat
-//    $ go build
-//    $ ./bndstat
-//    $ ./bndstat --help
+//    $ cd bndstat/util
+//    $ ./install.sh
+//    $ bndstat
+//    $ bndstat --help
 //
 // See https://github.com/robkingsbury/bndstat for full documentation on
 // building and using the tool.
