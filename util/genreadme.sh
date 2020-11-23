@@ -40,9 +40,7 @@ substitute() {
 # Rebuild the binary just in case something has been updated and should be
 # reflected in the output.
 echo "Building the binary ..."
-pushd .. > /dev/null
-go install
-popd > /dev/null
+./install.sh
 
 t=$(cat ${template})
 
