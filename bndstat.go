@@ -26,8 +26,12 @@ import (
 	"github.com/robkingsbury/bndstat/throughput"
 )
 
-// tag is used when printing version info
-var tag = "v0.4.2"
+// These vars are meant to be set by ldflags args passed to `go build` or
+// `go install`. See util/install.sh and printVersionInfo().
+var buildHost string
+var commit string
+var compileTime string
+var tags string
 
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
@@ -221,8 +225,21 @@ func devices(statDevices []string) []string {
 }
 
 func printVersionInfo() {
-	v := fmt.Sprintf("bndstat %s\n", tag)
+	v := "bndstat\n"
 	v += "Rob Kingsbury\n"
 	v += "https://github.com/robkingsbury/bndstat\n"
+	v += fmt.Sprintf("Tags: %s\n", noSet(tags))
+	v += fmt.Sprintf("Commit: %s\n", noSet(commit))
+	v += fmt.Sprintf("Compiled: %s\n", noSet(compileTime))
+	v += fmt.Sprintf("Build Host: %s\n", noSet(buildHost))
 	fmt.Printf("%s", v)
+}
+
+// noSet returns the input string if not empty. If empty, however, "not set" is
+// returned.
+func noSet(f string) string {
+	if f == "" {
+		return "not set"
+	}
+	return f
 }
