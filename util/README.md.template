@@ -6,12 +6,16 @@ A simple Go program that displays throughput stats for network interfaces.
 
 ## Quickstart
 
+Assuming you have your Go environment and path set up in a
+[standard way](https://golang.org/cmd/go/#hdr-Compile_and_install_packages_and_dependencies),
+this should get you started.
+
 ```
 $ git clone https://github.com/robkingsbury/bndstat
-$ cd bndstat
-$ go build
-$ ./bndstat
-$ ./bndstat --help
+$ cd bndstat/util
+$ ./install.sh
+$ bndstat
+$ bndstat --help
 ```
 
 ## Current Version

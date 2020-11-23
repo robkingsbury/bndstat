@@ -6,23 +6,27 @@ A simple Go program that displays throughput stats for network interfaces.
 
 ## Quickstart
 
+Assuming you have your Go environment and path set up in a
+[standard way](https://golang.org/cmd/go/#hdr-Compile_and_install_packages_and_dependencies),
+this should get you started.
+
 ```
 $ git clone https://github.com/robkingsbury/bndstat
-$ cd bndstat
-$ go build
-$ ./bndstat
-$ ./bndstat --help
+$ cd bndstat/util
+$ ./install.sh
+$ bndstat
+$ bndstat --help
 ```
 
 ## Current Version
 
 ```
 $ bndstat --version
-bndstat v0.4.3
+bndstat (untagged version)
 Rob Kingsbury
 https://github.com/robkingsbury/bndstat
-Commit: 9973dd6
-Compiled: Mon 23 Nov 13:21:49 PST 2020
+Commit: 4479bb9
+Compiled: Mon 23 Nov 13:28:14 PST 2020
 Build Host: bender
 ```
 
@@ -61,11 +65,11 @@ primary internet provider, eth2 is my backup internet line and wlan0 is a connec
 $ bndstat 3 5
               eth0                   eth1                   eth2                  wlan0     
          In         Out         In         Out         In         Out         In         Out
-     694.78       33.68      29.97      699.91       0.50        0.41       2.27        0.00
-     853.92       42.97      38.91      860.07       0.37        0.42       2.27        0.00
-     746.98       27.23      24.25      753.08       0.37        0.42       2.22        0.00
-     823.84       56.76      51.49      829.91       0.37        0.42       2.51        0.00
-     732.99       40.84      36.40      738.61       0.37        0.42       2.27        0.00
+     763.22       72.58      29.61      765.67       0.37        0.42       1.51        0.00
+     714.91       36.92      28.56      715.25       0.37        0.42       2.51        0.00
+    1422.51     2280.85    2237.27     1435.40       0.25        0.28      16.90        0.00
+    2159.93     2746.71    2710.01     2180.72       0.37        0.42      49.82        0.00
+    1402.60      197.03     188.29     1413.15       0.37        0.42       4.99        0.00
 ```
 
 Another example on the same machine, illustrating the device filter and using options instead of args for the interval and
@@ -75,11 +79,11 @@ count parameters:
 $ bndstat --devices=eth1,eth2 --interval=1 --count=5
               eth1                   eth2     
          In         Out         In         Out
-      31.57      921.49       0.37        0.42
-      53.21      791.79       0.95        1.15
-      29.11      973.08       0.75        0.81
-      23.31      929.47       0.37        0.42
-      29.97      557.78       0.37        0.42
+     861.18      508.35       0.37        0.42
+    1166.09     1112.78       0.37        0.42
+      37.46     1219.94       0.37        0.42
+     676.05      530.48       1.33        1.55
+     117.67      387.08       0.37        0.42
 ```
 
 ### Debug Logging
@@ -87,96 +91,96 @@ If you want to see the innerworkings of `bndstat`, you can use options from the 
 
 ```
 $ bndstat --logtostderr --v=2 --count=1
-I1123 13:22:11.065456   32631 bndstat.go:100] interval = 1.000000, count = 1
-I1123 13:22:11.066045   32631 throughput.go:21] os is "linux"
-I1123 13:22:11.066186   32631 throughput.go:33] running Reporter.Report() twice to prime the stats
-I1123 13:22:11.066255   32631 throughput.go:35] prime 1
-I1123 13:22:11.066616   32631 linux.go:113] found device eth0
-I1123 13:22:11.066690   32631 linux.go:118] bytesRecvStr for eth0: 1482014574
-I1123 13:22:11.066802   32631 linux.go:119] bytesTransStr for eth0: 1987710915
-I1123 13:22:11.066878   32631 linux.go:113] found device eth1
-I1123 13:22:11.066939   32631 linux.go:118] bytesRecvStr for eth1: 726390173352
-I1123 13:22:11.067035   32631 linux.go:119] bytesTransStr for eth1: 533904435768
-I1123 13:22:11.067106   32631 linux.go:113] found device eth2
-I1123 13:22:11.067168   32631 linux.go:118] bytesRecvStr for eth2: 1302215811
-I1123 13:22:11.067230   32631 linux.go:119] bytesTransStr for eth2: 1339553185
-I1123 13:22:11.067302   32631 linux.go:113] found device wlan0
-I1123 13:22:11.067361   32631 linux.go:118] bytesRecvStr for wlan0: 2480313862
-I1123 13:22:11.067425   32631 linux.go:119] bytesTransStr for wlan0: 100343615
-I1123 13:22:11.067495   32631 linux.go:113] found device lo
-I1123 13:22:11.067555   32631 linux.go:118] bytesRecvStr for lo: 619794
-I1123 13:22:11.067618   32631 linux.go:119] bytesTransStr for lo: 619794
-I1123 13:22:11.067695   32631 linux.go:65] updating state for eth0
-I1123 13:22:11.067784   32631 linux.go:65] updating state for eth1
-I1123 13:22:11.067848   32631 linux.go:65] updating state for eth2
-I1123 13:22:11.067912   32631 linux.go:65] updating state for wlan0
-I1123 13:22:11.067972   32631 linux.go:65] updating state for lo
-I1123 13:22:11.068060   32631 throughput.go:38] prime 2
-I1123 13:22:11.068274   32631 linux.go:113] found device eth0
-I1123 13:22:11.068341   32631 linux.go:118] bytesRecvStr for eth0: 1482014688
-I1123 13:22:11.068404   32631 linux.go:119] bytesTransStr for eth0: 1987710915
-I1123 13:22:11.068476   32631 linux.go:113] found device eth1
-I1123 13:22:11.068537   32631 linux.go:118] bytesRecvStr for eth1: 726390173352
-I1123 13:22:11.068600   32631 linux.go:119] bytesTransStr for eth1: 533904435890
-I1123 13:22:11.068682   32631 linux.go:113] found device eth2
-I1123 13:22:11.068744   32631 linux.go:118] bytesRecvStr for eth2: 1302215811
-I1123 13:22:11.068807   32631 linux.go:119] bytesTransStr for eth2: 1339553185
-I1123 13:22:11.068907   32631 linux.go:113] found device wlan0
-I1123 13:22:11.068967   32631 linux.go:118] bytesRecvStr for wlan0: 2480313862
-I1123 13:22:11.069030   32631 linux.go:119] bytesTransStr for wlan0: 100343615
-I1123 13:22:11.069136   32631 linux.go:113] found device lo
-I1123 13:22:11.069231   32631 linux.go:118] bytesRecvStr for lo: 619794
-I1123 13:22:11.069294   32631 linux.go:119] bytesTransStr for lo: 619794
-I1123 13:22:11.069367   32631 linux.go:65] updating state for eth0
-I1123 13:22:11.069427   32631 linux.go:65] updating state for eth1
-I1123 13:22:11.069487   32631 linux.go:65] updating state for eth2
-I1123 13:22:11.069546   32631 linux.go:65] updating state for wlan0
-I1123 13:22:11.069630   32631 linux.go:65] updating state for lo
-I1123 13:22:11.069885   32631 linux.go:113] found device eth0
-I1123 13:22:11.069955   32631 linux.go:118] bytesRecvStr for eth0: 1482014688
-I1123 13:22:11.070019   32631 linux.go:119] bytesTransStr for eth0: 1987710915
-I1123 13:22:11.070089   32631 linux.go:113] found device eth1
-I1123 13:22:11.070150   32631 linux.go:118] bytesRecvStr for eth1: 726390173352
-I1123 13:22:11.070212   32631 linux.go:119] bytesTransStr for eth1: 533904435890
-I1123 13:22:11.070282   32631 linux.go:113] found device eth2
-I1123 13:22:11.070341   32631 linux.go:118] bytesRecvStr for eth2: 1302215811
-I1123 13:22:11.070467   32631 linux.go:119] bytesTransStr for eth2: 1339553185
-I1123 13:22:11.070542   32631 linux.go:113] found device wlan0
-I1123 13:22:11.070601   32631 linux.go:118] bytesRecvStr for wlan0: 2480313862
-I1123 13:22:11.070664   32631 linux.go:119] bytesTransStr for wlan0: 100343615
-I1123 13:22:11.070733   32631 linux.go:113] found device lo
-I1123 13:22:11.070795   32631 linux.go:118] bytesRecvStr for lo: 619794
-I1123 13:22:11.070856   32631 linux.go:119] bytesTransStr for lo: 619794
-I1123 13:22:11.070928   32631 linux.go:65] updating state for eth0
-I1123 13:22:11.070989   32631 linux.go:65] updating state for eth1
-I1123 13:22:11.071049   32631 linux.go:65] updating state for eth2
-I1123 13:22:11.071108   32631 linux.go:65] updating state for wlan0
-I1123 13:22:11.071167   32631 linux.go:65] updating state for lo
+I1123 13:28:35.298751     459 bndstat.go:100] interval = 1.000000, count = 1
+I1123 13:28:35.299531     459 throughput.go:21] os is "linux"
+I1123 13:28:35.299586     459 throughput.go:33] running Reporter.Report() twice to prime the stats
+I1123 13:28:35.299629     459 throughput.go:35] prime 1
+I1123 13:28:35.300056     459 linux.go:113] found device eth0
+I1123 13:28:35.300107     459 linux.go:118] bytesRecvStr for eth0: 1523136864
+I1123 13:28:35.300151     459 linux.go:119] bytesTransStr for eth0: 2005601804
+I1123 13:28:35.300202     459 linux.go:113] found device eth1
+I1123 13:28:35.300242     459 linux.go:118] bytesRecvStr for eth1: 726407418286
+I1123 13:28:35.300283     459 linux.go:119] bytesTransStr for eth1: 533945785486
+I1123 13:28:35.300335     459 linux.go:113] found device eth2
+I1123 13:28:35.300378     459 linux.go:118] bytesRecvStr for eth2: 1302236597
+I1123 13:28:35.300420     459 linux.go:119] bytesTransStr for eth2: 1339577093
+I1123 13:28:35.300472     459 linux.go:113] found device wlan0
+I1123 13:28:35.300513     459 linux.go:118] bytesRecvStr for wlan0: 2480636495
+I1123 13:28:35.300556     459 linux.go:119] bytesTransStr for wlan0: 100343615
+I1123 13:28:35.300606     459 linux.go:113] found device lo
+I1123 13:28:35.300647     459 linux.go:118] bytesRecvStr for lo: 619794
+I1123 13:28:35.300690     459 linux.go:119] bytesTransStr for lo: 619794
+I1123 13:28:35.300765     459 linux.go:65] updating state for eth0
+I1123 13:28:35.300809     459 linux.go:65] updating state for eth1
+I1123 13:28:35.300850     459 linux.go:65] updating state for eth2
+I1123 13:28:35.300890     459 linux.go:65] updating state for wlan0
+I1123 13:28:35.300930     459 linux.go:65] updating state for lo
+I1123 13:28:35.301000     459 throughput.go:38] prime 2
+I1123 13:28:35.301225     459 linux.go:113] found device eth0
+I1123 13:28:35.301272     459 linux.go:118] bytesRecvStr for eth0: 1523136864
+I1123 13:28:35.301314     459 linux.go:119] bytesTransStr for eth0: 2005601804
+I1123 13:28:35.301365     459 linux.go:113] found device eth1
+I1123 13:28:35.301407     459 linux.go:118] bytesRecvStr for eth1: 726407418286
+I1123 13:28:35.301449     459 linux.go:119] bytesTransStr for eth1: 533945785486
+I1123 13:28:35.301498     459 linux.go:113] found device eth2
+I1123 13:28:35.301539     459 linux.go:118] bytesRecvStr for eth2: 1302236597
+I1123 13:28:35.301581     459 linux.go:119] bytesTransStr for eth2: 1339577093
+I1123 13:28:35.301632     459 linux.go:113] found device wlan0
+I1123 13:28:35.301671     459 linux.go:118] bytesRecvStr for wlan0: 2480636495
+I1123 13:28:35.301712     459 linux.go:119] bytesTransStr for wlan0: 100343615
+I1123 13:28:35.301761     459 linux.go:113] found device lo
+I1123 13:28:35.301802     459 linux.go:118] bytesRecvStr for lo: 619794
+I1123 13:28:35.301844     459 linux.go:119] bytesTransStr for lo: 619794
+I1123 13:28:35.301897     459 linux.go:65] updating state for eth0
+I1123 13:28:35.301936     459 linux.go:65] updating state for eth1
+I1123 13:28:35.301975     459 linux.go:65] updating state for eth2
+I1123 13:28:35.302012     459 linux.go:65] updating state for wlan0
+I1123 13:28:35.302056     459 linux.go:65] updating state for lo
+I1123 13:28:35.302298     459 linux.go:113] found device eth0
+I1123 13:28:35.302345     459 linux.go:118] bytesRecvStr for eth0: 1523136864
+I1123 13:28:35.302385     459 linux.go:119] bytesTransStr for eth0: 2005601804
+I1123 13:28:35.302435     459 linux.go:113] found device eth1
+I1123 13:28:35.302476     459 linux.go:118] bytesRecvStr for eth1: 726407418286
+I1123 13:28:35.302518     459 linux.go:119] bytesTransStr for eth1: 533945785486
+I1123 13:28:35.302567     459 linux.go:113] found device eth2
+I1123 13:28:35.302671     459 linux.go:118] bytesRecvStr for eth2: 1302236597
+I1123 13:28:35.302717     459 linux.go:119] bytesTransStr for eth2: 1339577093
+I1123 13:28:35.302769     459 linux.go:113] found device wlan0
+I1123 13:28:35.302810     459 linux.go:118] bytesRecvStr for wlan0: 2480636495
+I1123 13:28:35.302852     459 linux.go:119] bytesTransStr for wlan0: 100343615
+I1123 13:28:35.302901     459 linux.go:113] found device lo
+I1123 13:28:35.302942     459 linux.go:118] bytesRecvStr for lo: 619794
+I1123 13:28:35.302981     459 linux.go:119] bytesTransStr for lo: 619794
+I1123 13:28:35.303035     459 linux.go:65] updating state for eth0
+I1123 13:28:35.303073     459 linux.go:65] updating state for eth1
+I1123 13:28:35.303112     459 linux.go:65] updating state for eth2
+I1123 13:28:35.303151     459 linux.go:65] updating state for wlan0
+I1123 13:28:35.303189     459 linux.go:65] updating state for lo
               eth0                   eth1                   eth2                  wlan0     
          In         Out         In         Out         In         Out         In         Out
-I1123 13:22:12.072214   32631 linux.go:113] found device eth0
-I1123 13:22:12.072298   32631 linux.go:118] bytesRecvStr for eth0: 1482153406
-I1123 13:22:12.072346   32631 linux.go:119] bytesTransStr for eth0: 1987716982
-I1123 13:22:12.072401   32631 linux.go:113] found device eth1
-I1123 13:22:12.072455   32631 linux.go:118] bytesRecvStr for eth1: 726390178773
-I1123 13:22:12.072500   32631 linux.go:119] bytesTransStr for eth1: 533904575487
-I1123 13:22:12.072551   32631 linux.go:113] found device eth2
-I1123 13:22:12.072594   32631 linux.go:118] bytesRecvStr for eth2: 1302215859
-I1123 13:22:12.072637   32631 linux.go:119] bytesTransStr for eth2: 1339553239
-I1123 13:22:12.072687   32631 linux.go:113] found device wlan0
-I1123 13:22:12.072728   32631 linux.go:118] bytesRecvStr for wlan0: 2480314153
-I1123 13:22:12.072773   32631 linux.go:119] bytesTransStr for wlan0: 100343615
-I1123 13:22:12.072820   32631 linux.go:113] found device lo
-I1123 13:22:12.072862   32631 linux.go:118] bytesRecvStr for lo: 619794
-I1123 13:22:12.072901   32631 linux.go:119] bytesTransStr for lo: 619794
-I1123 13:22:12.072957   32631 linux.go:65] updating state for eth0
-I1123 13:22:12.072999   32631 linux.go:65] updating state for eth1
-I1123 13:22:12.073035   32631 linux.go:65] updating state for eth2
-I1123 13:22:12.073074   32631 linux.go:65] updating state for wlan0
-I1123 13:22:12.073109   32631 linux.go:65] updating state for lo
-I1123 13:22:12.073187   32631 table.go:58] rows = 40, tableLineCount = 2
-I1123 13:22:12.073235   32631 table.go:69] tableLineCount = 2, rows-3 = 37
-    1081.54       47.30      42.27     1088.40       0.37        0.42       2.27        0.00
+I1123 13:28:36.303920     459 linux.go:113] found device eth0
+I1123 13:28:36.304027     459 linux.go:118] bytesRecvStr for eth0: 1523376937
+I1123 13:28:36.304075     459 linux.go:119] bytesTransStr for eth0: 2005987285
+I1123 13:28:36.304131     459 linux.go:113] found device eth1
+I1123 13:28:36.304176     459 linux.go:118] bytesRecvStr for eth1: 726407798839
+I1123 13:28:36.304219     459 linux.go:119] bytesTransStr for eth1: 533946028228
+I1123 13:28:36.304269     459 linux.go:113] found device eth2
+I1123 13:28:36.304312     459 linux.go:118] bytesRecvStr for eth2: 1302236645
+I1123 13:28:36.304355     459 linux.go:119] bytesTransStr for eth2: 1339577147
+I1123 13:28:36.304406     459 linux.go:113] found device wlan0
+I1123 13:28:36.304448     459 linux.go:118] bytesRecvStr for wlan0: 2480636786
+I1123 13:28:36.304492     459 linux.go:119] bytesTransStr for wlan0: 100343615
+I1123 13:28:36.304542     459 linux.go:113] found device lo
+I1123 13:28:36.304583     459 linux.go:118] bytesRecvStr for lo: 619794
+I1123 13:28:36.304625     459 linux.go:119] bytesTransStr for lo: 619794
+I1123 13:28:36.304681     459 linux.go:65] updating state for eth0
+I1123 13:28:36.304722     459 linux.go:65] updating state for eth1
+I1123 13:28:36.304761     459 linux.go:65] updating state for eth2
+I1123 13:28:36.304798     459 linux.go:65] updating state for wlan0
+I1123 13:28:36.304836     459 linux.go:65] updating state for lo
+I1123 13:28:36.304915     459 table.go:58] rows = 40, tableLineCount = 2
+I1123 13:28:36.304962     459 table.go:69] tableLineCount = 2, rows-3 = 37
+    1872.49     3006.63    2968.19     1893.31       0.37        0.42       2.27        0.00
 ```
 
 ## Supported Platforms
