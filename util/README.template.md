@@ -43,6 +43,10 @@ If you want to see the innerworkings of `bndstat`, you can use options from the 
 
 DEBUGEXAMPLE
 
+## Throughput Package
+
+Device stats are available programmatically via the *throughput* package. See http://godoc.org/github.com/robkingsbury/bndstat/throughput for the GoDoc package documentation.
+
 ## Supported Platforms
 
 As of v0.4.0, only Linux is supported. The Linux library relies on information from `/proc/net/dev` so it *should* work on most Linux systems. Very long device names would probably make the output look a little wonky since the column width is static right now.
