@@ -1,6 +1,6 @@
 #!/bin/bash
 
-template="README.md.template"
+template="README.template.md"
 readme="../README.md"
 
 # Execute cmds and save output in a var, with the cmd itself and markdown
