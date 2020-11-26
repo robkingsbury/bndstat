@@ -32,6 +32,7 @@ var buildHost string
 var commit string
 var compileTime string
 var tags string
+var version string
 
 var countFlag = flag.Int("count", 0, "count of updates, any zero or negative values are considered infinity")
 var devicesFlag = flag.String("devices", "", "comma separated list of devices to output; all non-loopback devices included if empty")
@@ -225,10 +226,10 @@ func devices(statDevices []string) []string {
 }
 
 func printVersionInfo() {
-	v := fmt.Sprintf("bndstat %s\n", noSetTags(tags))
+	v := fmt.Sprintf("bndstat %s\n", version)
 	v += "Rob Kingsbury\n"
 	v += "https://github.com/robkingsbury/bndstat\n"
-	v += fmt.Sprintf("Commit: %s\n", noSet(commit))
+	v += fmt.Sprintf("Commit: %s%s\n", noSet(commit), noSetTags(tags))
 	v += fmt.Sprintf("Compiled: %s\n", noSet(compileTime))
 	v += fmt.Sprintf("Build Host: %s\n", noSet(buildHost))
 	fmt.Printf("%s", v)
@@ -245,7 +246,7 @@ func noSet(f string) string {
 
 func noSetTags(t string) string {
 	if t == "" {
-		return "(untagged version)"
+		return ""
 	}
-	return strings.ReplaceAll(t, "\n", " ")
+	return " (" + strings.ReplaceAll(t, "\n", ", ") + ")"
 }
