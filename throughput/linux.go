@@ -2,6 +2,7 @@ package throughput
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang/glog"
+	"github.com/kr/pretty"
 )
 
 // Linux implements the Reporter interface for linux systems.
@@ -27,6 +29,8 @@ type deviceData struct {
 	currentTime     time.Time
 	currentBytesIn  uint64
 	currentBytesOut uint64
+
+	rawText [shiftSize]string
 }
 
 // singleRead is the struct representing the bytesIn and bytesOut of a device at
@@ -35,6 +39,7 @@ type singleRead struct {
 	name     string
 	bytesIn  uint64
 	bytesOut uint64
+	rawText  string
 }
 
 // NewLinux returns a pointer to an initialized Linux.
@@ -50,13 +55,46 @@ func (l *Linux) Report() (*Stats, error) {
 		return &Stats{}, err
 	}
 
-	srs, err := l.parseNetDev(p)
+	srs, err := parseNetDev(p)
 	if err != nil {
 		return &Stats{}, err
 	}
 
 	l.update(srs, time.Now())
+	stats := l.stats()
+
+	// Look for anything that shoud trigger a raw data dump.
+	for _, device := range stats.Devices() {
+		in, out, err := stats.Avg(device, Kbps)
+		if err != nil {
+			return &Stats{}, fmt.Errorf("could not get average from %s", device)
+		}
+		if in > 500000 || out > 500000 {
+			glog.Errorf("Big number detected on %s", device)
+			glog.Infof("  in=%f", in)
+			glog.Infof("  out=%f", out)
+			glog.Infof("  stats:\n%s", pretty.Sprint(stats))
+			l.dumpRawText(device)
+			glog.Flush()
+		}
+	}
+
 	return l.stats(), nil
+}
+
+// dumpRawText logs the raw text from /proc/net/dev for each device.
+func (l *Linux) dumpRawText(device string) {
+	glog.Infof("Dumping /prov/net/dev data for %s", device)
+
+	data, ok := l.devices[device]
+	if !ok {
+		glog.Errorf("dumpRawText on device that does not exist: %s", device)
+		return
+	}
+
+	for i, t := range data.rawText {
+		glog.Infof("  [%d] %s", i, t)
+	}
 }
 
 // update l.devices with info from a slice of singleReads.
@@ -77,6 +115,9 @@ func (l *Linux) update(srs []*singleRead, now time.Time) {
 		d.currentTime = now
 		d.currentBytesIn = sr.bytesIn
 		d.currentBytesOut = sr.bytesOut
+
+		d.shiftRawText()
+		d.rawText[0] = sr.rawText
 	}
 }
 
@@ -102,7 +143,7 @@ func (l *Linux) stats() *Stats {
 // /proc/net/dev. It returns a slice of singleReads, populating each element
 // with each device found. If the input byte slice does not match the correct
 // format, an empty slice will be returned.
-func (l *Linux) parseNetDev(i io.Reader) ([]*singleRead, error) {
+func parseNetDev(i io.Reader) ([]*singleRead, error) {
 	srs := []*singleRead{}
 
 	s := bufio.NewScanner(i)
@@ -131,6 +172,7 @@ func (l *Linux) parseNetDev(i io.Reader) ([]*singleRead, error) {
 				name:     dev,
 				bytesIn:  uint64(bytesRecv),
 				bytesOut: uint64(bytesTrans),
+				rawText:  s.Text(),
 			}
 			srs = append(srs, sr)
 		}
@@ -141,4 +183,13 @@ func (l *Linux) parseNetDev(i io.Reader) ([]*singleRead, error) {
 	}
 
 	return srs, nil
+}
+
+const shiftSize = 4
+
+// Shift raw data: 0 is latest, shiftSize is the earliest.
+func (d *deviceData) shiftRawText() {
+	for i := shiftSize - 1; i > 0; i-- {
+		d.rawText[i] = d.rawText[i-1]
+	}
 }
