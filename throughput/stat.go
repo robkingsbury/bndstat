@@ -41,7 +41,7 @@ func (s *Stats) Devices() []string {
 // Avg returns the average throughput for the device, in the units specified.
 // If the device does not exist, zeros are returned.
 //
-// TODO: test needed, return error when no device found (don't be lazy)
+// TODO: test needed
 func (s *Stats) Avg(device string, unit Unit) (in float64, out float64, err error) {
 	stat, ok := s.devices[device]
 	if !ok {
