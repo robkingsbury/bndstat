@@ -19,8 +19,7 @@ var maxVal64 = uint64(math.Pow(2, 64))
 
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
-	devices    map[string]*deviceData
-	maxCounter map[string]uint64
+	devices map[string]*deviceData
 }
 
 // deviceData is the persistent data held in a Linux struct. When Report() is
@@ -35,7 +34,8 @@ type deviceData struct {
 	currentBytesIn  uint64
 	currentBytesOut uint64
 
-	rawText [shiftSize]string
+	rawText    [shiftSize]string
+	maxCounter uint64
 }
 
 // singleRead is the struct representing the bytesIn and bytesOut of a device at
@@ -49,10 +49,7 @@ type singleRead struct {
 
 // NewLinux returns a pointer to an initialized Linux.
 func NewLinux() *Linux {
-	return &Linux{
-		devices:    map[string]*deviceData{},
-		maxCounter: map[string]uint64{},
-	}
+	return &Linux{devices: map[string]*deviceData{}}
 }
 
 // Report reads /proc/net/dev, updates its internal state with the latest
@@ -149,28 +146,28 @@ func (l *Linux) stats() *Stats {
 
 	for device, data := range l.devices {
 		// Record maxCounter if any counter is the biggest we've seen yet.
-		if data.currentBytesIn > l.maxCounter[device] {
-			l.maxCounter[device] = data.currentBytesIn
+		if data.currentBytesIn > data.maxCounter {
+			data.maxCounter = data.currentBytesIn
 		}
-		if data.currentBytesOut > l.maxCounter[device] {
-			l.maxCounter[device] = data.currentBytesOut
+		if data.currentBytesOut > data.maxCounter {
+			data.maxCounter = data.currentBytesOut
 		}
-		if data.lastBytesIn > l.maxCounter[device] {
-			l.maxCounter[device] = data.lastBytesIn
+		if data.lastBytesIn > data.maxCounter {
+			data.maxCounter = data.lastBytesIn
 		}
-		if data.lastBytesOut > l.maxCounter[device] {
-			l.maxCounter[device] = data.lastBytesOut
+		if data.lastBytesOut > data.maxCounter {
+			data.maxCounter = data.lastBytesOut
 		}
 
 		// Guess the max counter size in case we've had a rollover. This isn't
 		// strictly correct but would only fail in the case of a 64-bit counter that
 		// has experienced over 18 Exabits of traffic between probes.
 		guess := maxVal32
-		if l.maxCounter[device] > maxVal32 {
+		if data.maxCounter > maxVal32 {
 			guess = maxVal64
 		}
 		glog.V(2).Infof("%s: max counter seen = %d, max counter guess = %d",
-			device, l.maxCounter[device], guess)
+			device, data.maxCounter, guess)
 
 		inDiff := data.currentBytesIn - data.lastBytesIn
 		outDiff := data.currentBytesOut - data.lastBytesOut
