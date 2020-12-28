@@ -13,6 +13,8 @@ import (
 	"github.com/kr/pretty"
 )
 
+const netDevCounterSize = 32
+
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
 	devices     map[string]*deviceData
@@ -47,7 +49,7 @@ type singleRead struct {
 func NewLinux() *Linux {
 	return &Linux{
 		devices:     map[string]*deviceData{},
-		counterSize: 32,
+		counterSize: netDevCounterSize,
 	}
 }
 
