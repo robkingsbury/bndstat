@@ -426,6 +426,41 @@ func TestStats(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "unsig 32-bit rollover, out, w/ another 64-bit device",
+			state: map[string]*deviceData{
+				"eth0-32": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     0,
+					lastBytesOut:    maxVal32 - 10,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  0,
+					currentBytesOut: 10,
+				},
+				"eth1-64": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     0,
+					lastBytesOut:    maxVal32 * 2,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  0,
+					currentBytesOut: maxVal32*2 + 10,
+				},
+			},
+			want: &Stats{
+				devices: map[string]*stat{
+					"eth0-32": {
+						bytesIn:  0,
+						bytesOut: 20,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+					"eth1-64": {
+						bytesIn:  0,
+						bytesOut: 10,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
