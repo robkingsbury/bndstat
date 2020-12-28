@@ -162,7 +162,7 @@ func (l *Linux) stats() *Stats {
 		// Guess the max counter size in case we've had a rollover. This isn't
 		// strictly correct but would only fail in the case of a 64-bit counter that
 		// has experienced over 18 Exabits of traffic between probes.
-    // TODO: this needs to be per device maybe?
+		// TODO: this needs to be per device maybe?
 		guess := maxVal32
 		if l.maxCounter > maxVal32 {
 			guess = maxVal64
