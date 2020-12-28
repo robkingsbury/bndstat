@@ -15,7 +15,8 @@ import (
 
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
-	devices map[string]*deviceData
+	devices     map[string]*deviceData
+	counterSize int
 }
 
 // deviceData is the persistent data held in a Linux struct. When Report() is
@@ -44,7 +45,10 @@ type singleRead struct {
 
 // NewLinux returns a pointer to an initialized Linux.
 func NewLinux() *Linux {
-	return &Linux{devices: map[string]*deviceData{}}
+	return &Linux{
+		devices:     map[string]*deviceData{},
+		counterSize: 32,
+	}
 }
 
 // Report reads /proc/net/dev, updates its internal state with the latest
@@ -63,14 +67,26 @@ func (l *Linux) Report() (*Stats, error) {
 	l.update(srs, time.Now())
 	stats := l.stats()
 
-	// Look for anything that shoud trigger a raw data dump.
+	// Look for anything that should trigger a raw data dump to debug bad data rates.
 	for _, device := range stats.Devices() {
 		in, out, err := stats.Avg(device, Kbps)
 		if err != nil {
 			return &Stats{}, fmt.Errorf("could not get average from %s", device)
 		}
-		if in > 500000 || out > 500000 {
-			glog.Errorf("Big number detected on %s", device)
+
+		trigger := false
+		switch {
+		// 1 Tbps is faster than any hardware as of 2020.
+		case in > 1000000000 || out > 1000000000:
+			glog.Warningf("Triggering data dump because very large rate found")
+			trigger = true
+		case in < 0 || out < 0:
+			glog.Warningf("Triggering data dump because negative rate found")
+			trigger = true
+		}
+
+		if trigger {
+			glog.Infof("  device=%s", device)
 			glog.Infof("  in=%f", in)
 			glog.Infof("  out=%f", out)
 			glog.Infof("  stats:\n%s", pretty.Sprint(stats))
