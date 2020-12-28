@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -13,12 +14,13 @@ import (
 	"github.com/kr/pretty"
 )
 
-const netDevCounterSize = 32
+const netDevCounterSize float64 = 32
 
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
 	devices     map[string]*deviceData
-	counterSize int
+	counterSize float64
+	maxCounter  uint64
 }
 
 // deviceData is the persistent data held in a Linux struct. When Report() is
@@ -50,6 +52,7 @@ func NewLinux() *Linux {
 	return &Linux{
 		devices:     map[string]*deviceData{},
 		counterSize: netDevCounterSize,
+		maxCounter:  uint64(math.Pow(2, netDevCounterSize)),
 	}
 }
 
@@ -146,10 +149,25 @@ func (l *Linux) stats() *Stats {
 	}
 
 	for device, data := range l.devices {
+		inDiff := data.currentBytesIn - data.lastBytesIn
+		outDiff := data.currentBytesOut - data.lastBytesOut
+
+		// Correct for counter rollover
+		if data.currentBytesIn < data.lastBytesIn {
+			glog.V(1).Infof("Counter rollover for %s (in)", device)
+			glog.V(2).Infof("max = %d", l.maxCounter)
+			inDiff = l.maxCounter - data.lastBytesIn + data.currentBytesIn
+		}
+		if data.currentBytesOut < data.lastBytesOut {
+			glog.V(1).Infof("Counter rollover for %s (out)", device)
+			glog.V(2).Infof("max = %d", l.maxCounter)
+			outDiff = l.maxCounter - data.lastBytesOut + data.currentBytesOut
+		}
+
 		s := &stat{
 			elapsed:  data.currentTime.Sub(data.lastTime),
-			bytesIn:  data.currentBytesIn - data.lastBytesIn,
-			bytesOut: data.currentBytesOut - data.lastBytesOut,
+			bytesIn:  inDiff,
+			bytesOut: outDiff,
 		}
 		stats.devices[device] = s
 	}
