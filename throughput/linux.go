@@ -14,13 +14,13 @@ import (
 	"github.com/kr/pretty"
 )
 
-const netDevCounterSize float64 = 32
+var maxVal32 = uint64(math.Pow(2, 32))
+var maxVal64 = uint64(math.Pow(2, 64))
 
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
-	devices     map[string]*deviceData
-	counterSize float64
-	maxCounter  uint64
+	devices    map[string]*deviceData
+	maxCounter uint64
 }
 
 // deviceData is the persistent data held in a Linux struct. When Report() is
@@ -49,11 +49,7 @@ type singleRead struct {
 
 // NewLinux returns a pointer to an initialized Linux.
 func NewLinux() *Linux {
-	return &Linux{
-		devices:     map[string]*deviceData{},
-		counterSize: netDevCounterSize,
-		maxCounter:  uint64(math.Pow(2, netDevCounterSize)),
-	}
+	return &Linux{devices: map[string]*deviceData{}}
 }
 
 // Report reads /proc/net/dev, updates its internal state with the latest
@@ -149,19 +145,40 @@ func (l *Linux) stats() *Stats {
 	}
 
 	for device, data := range l.devices {
+		// Record maxCounter if any counter is the biggest we've seen yet.
+		if data.currentBytesIn > l.maxCounter {
+			l.maxCounter = data.currentBytesIn
+		}
+		if data.currentBytesOut > l.maxCounter {
+			l.maxCounter = data.currentBytesOut
+		}
+		if data.lastBytesIn > l.maxCounter {
+			l.maxCounter = data.lastBytesIn
+		}
+		if data.lastBytesOut > l.maxCounter {
+			l.maxCounter = data.lastBytesOut
+		}
+
+		// Guess the max counter size in case we've had a rollover. This isn't
+		// strictly correct but would only fail in the case of a 64-bit counter that
+		// has experienced over 18 Exabits of traffic between probes.
+		guess := maxVal32
+		if l.maxCounter > maxVal32 {
+			guess = maxVal64
+		}
+		glog.V(2).Infof("max counter seen = %d, max counter guess = %d", l.maxCounter, guess)
+
 		inDiff := data.currentBytesIn - data.lastBytesIn
 		outDiff := data.currentBytesOut - data.lastBytesOut
 
 		// Correct for counter rollover
 		if data.currentBytesIn < data.lastBytesIn {
 			glog.V(1).Infof("Counter rollover for %s (in)", device)
-			glog.V(2).Infof("max = %d", l.maxCounter)
-			inDiff = l.maxCounter - data.lastBytesIn + data.currentBytesIn
+			inDiff = guess - data.lastBytesIn + data.currentBytesIn
 		}
 		if data.currentBytesOut < data.lastBytesOut {
 			glog.V(1).Infof("Counter rollover for %s (out)", device)
-			glog.V(2).Infof("max = %d", l.maxCounter)
-			outDiff = l.maxCounter - data.lastBytesOut + data.currentBytesOut
+			outDiff = guess - data.lastBytesOut + data.currentBytesOut
 		}
 
 		s := &stat{

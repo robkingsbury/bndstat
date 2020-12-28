@@ -2,7 +2,6 @@ package throughput
 
 import (
 	"bytes"
-	"math"
 	"testing"
 	"time"
 
@@ -10,9 +9,6 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/kr/pretty"
 )
-
-var maxVal32 = uint64(math.Pow(2, 32))
-var maxVal64 = uint64(math.Pow(2, 64))
 
 // Ensure the Linux struct satisfies the Reporter interface. Since not
 // implementing the interface is a compile time error, there's no value
@@ -260,10 +256,7 @@ func TestUpdate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			l := &Linux{
-				devices:     test.state,
-				counterSize: netDevCounterSize,
-			}
+			l := &Linux{devices: test.state}
 			l.update(test.input, test.now)
 
 			o := []cmp.Option{
@@ -279,20 +272,17 @@ func TestUpdate(t *testing.T) {
 
 func TestStats(t *testing.T) {
 	tests := []struct {
-		name       string
-		maxCounter uint64
-		state      map[string]*deviceData
-		want       *Stats
+		name  string
+		state map[string]*deviceData
+		want  *Stats
 	}{
 		{
-			name:       "trivial",
-			maxCounter: maxVal32,
-			state:      map[string]*deviceData{},
-			want:       &Stats{},
+			name:  "trivial",
+			state: map[string]*deviceData{},
+			want:  &Stats{},
 		},
 		{
-			name:       "simple",
-			maxCounter: maxVal32,
+			name: "simple",
 			state: map[string]*deviceData{
 				"eth0": {
 					lastTime:        time.Unix(1, 0),
@@ -314,8 +304,7 @@ func TestStats(t *testing.T) {
 			},
 		},
 		{
-			name:       "two devices",
-			maxCounter: maxVal32,
+			name: "two devices",
 			state: map[string]*deviceData{
 				"eth0": {
 					lastTime:        time.Unix(1, 0),
@@ -350,8 +339,7 @@ func TestStats(t *testing.T) {
 			},
 		},
 		{
-			name:       "unsig 64-bit rollover, in",
-			maxCounter: maxVal64,
+			name: "unsig 64-bit rollover, in",
 			state: map[string]*deviceData{
 				"eth0": {
 					lastTime:        time.Unix(1, 0),
@@ -373,8 +361,7 @@ func TestStats(t *testing.T) {
 			},
 		},
 		{
-			name:       "unsig 64-bit rollover, out",
-			maxCounter: maxVal64,
+			name: "unsig 64-bit rollover, out",
 			state: map[string]*deviceData{
 				"eth0": {
 					lastTime:        time.Unix(1, 0),
@@ -396,8 +383,7 @@ func TestStats(t *testing.T) {
 			},
 		},
 		{
-			name:       "unsig 32-bit rollover, in",
-			maxCounter: maxVal32,
+			name: "unsig 32-bit rollover, in",
 			state: map[string]*deviceData{
 				"eth0": {
 					lastTime:        time.Unix(1, 0),
@@ -419,8 +405,7 @@ func TestStats(t *testing.T) {
 			},
 		},
 		{
-			name:       "unsig 32-bit rollover, out",
-			maxCounter: maxVal32,
+			name: "unsig 32-bit rollover, out",
 			state: map[string]*deviceData{
 				"eth0": {
 					lastTime:        time.Unix(1, 0),
@@ -447,7 +432,6 @@ func TestStats(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			l := NewLinux()
 			l.devices = test.state
-			l.maxCounter = test.maxCounter
 
 			got := l.stats()
 
