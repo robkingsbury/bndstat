@@ -101,7 +101,7 @@ func (l *Linux) Report() (*Stats, error) {
 
 // dumpRawText logs the raw text from /proc/net/dev for each device.
 func (l *Linux) dumpRawText(device string) {
-	glog.Infof("Dumping /prov/net/dev data for %s", device)
+	glog.Infof("Dumping /proc/net/dev data for %s", device)
 
 	data, ok := l.devices[device]
 	if !ok {
