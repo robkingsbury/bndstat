@@ -188,6 +188,15 @@ func (l *Linux) stats() *Stats {
 			bytesOut: outDiff,
 		}
 		stats.devices[device] = s
+
+		if glog.V(2) {
+			in, out, err := stats.Avg(device, Kbps)
+			if err != nil {
+				glog.Errorf("Erroring getting avg() from %s: %s", device, err)
+			} else {
+				glog.V(2).Infof("%s: in=%.4f kbps, out=%.4f kbps", device, in, out)
+			}
+		}
 	}
 
 	return stats
