@@ -16,6 +16,7 @@ import (
 
 var maxVal32 = uint64(math.Pow(2, 32))
 var maxVal64 = uint64(math.Pow(2, 64))
+var tbps = math.Pow(2, float64(Tbps))
 
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
@@ -70,17 +71,19 @@ func (l *Linux) Report() (*Stats, error) {
 
 	// Look for anything that should trigger a raw data dump to debug bad data rates.
 	for _, device := range stats.Devices() {
-		in, out, err := stats.Avg(device, Kbps)
+		in, out, err := stats.Avg(device, Bps)
 		if err != nil {
 			return &Stats{}, fmt.Errorf("could not get average from %s", device)
 		}
 
 		trigger := false
 		switch {
+
 		// 1 Tbps is faster than any hardware as of 2020.
-		case in > 1000000000 || out > 1000000000:
+		case in > tbps || out > tbps:
 			glog.Warningf("Triggering data dump because very large rate found")
 			trigger = true
+
 		case in < 0 || out < 0:
 			glog.Warningf("Triggering data dump because negative rate found")
 			trigger = true
