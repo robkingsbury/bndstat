@@ -157,8 +157,8 @@ func bndstat() error {
 			return nil
 		}
 
-		time.Sleep(intervalDuration)
 		glog.Flush()
+		time.Sleep(intervalDuration)
 	}
 
 	return nil
