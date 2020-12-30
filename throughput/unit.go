@@ -60,12 +60,12 @@ func ParseUnit(u string) (Unit, error) {
 	return Bps, fmt.Errorf("could not parse %q into a Unit", u)
 }
 
-// Base2 returns two raised to the power of the unit.
+// Base2 returns the base 2 value of the unit.
 func (u Unit) Base2() float64 {
 	return math.Pow(2, float64(u*10))
 }
 
-// Base10 returns ten raised to the power of the unit.
+// Base10 returns the base 10 value of the unit.
 func (u Unit) Base10() float64 {
 	return math.Pow(10, float64(u*3))
 }
