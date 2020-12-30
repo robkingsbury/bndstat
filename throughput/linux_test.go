@@ -50,6 +50,7 @@ func TestParseNetDev(t *testing.T) {
 					name:     "eth0",
 					bytesIn:  1,
 					bytesOut: 2,
+					rawText:  "eth0: 1 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0",
 				},
 			},
 		},
@@ -62,6 +63,7 @@ func TestParseNetDev(t *testing.T) {
 					name:     "eth0",
 					bytesIn:  18446744073709551615,
 					bytesOut: 2,
+					rawText:  "eth0: 18446744073709551615 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0",
 				},
 			},
 		},
@@ -74,6 +76,7 @@ func TestParseNetDev(t *testing.T) {
 					name:     "eth0",
 					bytesIn:  1,
 					bytesOut: 18446744073709551615,
+					rawText:  "eth0: 1 0 0 0 0 0 0 0 18446744073709551615 0 0 0 0 0 0 0",
 				},
 			},
 		},
@@ -86,16 +89,19 @@ func TestParseNetDev(t *testing.T) {
 					name:     "eth0",
 					bytesIn:  0,
 					bytesOut: 0,
+					rawText:  "  eth0:       0       0    0    0    0     0          0         0        0       0    0    0    0     0       0          0",
 				},
 				{
 					name:     "wlan0",
 					bytesIn:  365688729,
 					bytesOut: 6999705,
+					rawText:  " wlan0: 365688729 1011122    0   39    0     0          0    868185  6999705   31566    0    0    0     0       0          0",
 				},
 				{
 					name:     "lo",
 					bytesIn:  24685,
 					bytesOut: 24685,
+					rawText:  "    lo:   24685     271    0    0    0     0          0         0    24685     271    0    0    0     0       0          0",
 				},
 			},
 		},
@@ -127,8 +133,7 @@ func TestParseNetDev(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			l := NewLinux()
-			got, err := l.parseNetDev(bytes.NewReader(test.input))
+			got, err := parseNetDev(bytes.NewReader(test.input))
 
 			if test.errExpected && err == nil {
 				t.Fatalf("Error expected but none was returned")
@@ -251,9 +256,7 @@ func TestUpdate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			l := &Linux{
-				devices: test.state,
-			}
+			l := &Linux{devices: test.state}
 			l.update(test.input, test.now)
 
 			o := []cmp.Option{
@@ -336,14 +339,14 @@ func TestStats(t *testing.T) {
 			},
 		},
 		{
-			name: "unsig 64-bit rollover",
+			name: "unsig 64-bit rollover, in",
 			state: map[string]*deviceData{
 				"eth0": {
 					lastTime:        time.Unix(1, 0),
-					lastBytesIn:     18446744073709551615 - 10,
+					lastBytesIn:     maxVal64 - 10,
 					lastBytesOut:    0,
 					currentTime:     time.Unix(2, 0),
-					currentBytesIn:  9,
+					currentBytesIn:  10,
 					currentBytesOut: 0,
 				},
 			},
@@ -357,13 +360,114 @@ func TestStats(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "unsig 64-bit rollover, out",
+			state: map[string]*deviceData{
+				"eth0": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     0,
+					lastBytesOut:    maxVal64 - 10,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  0,
+					currentBytesOut: 10,
+				},
+			},
+			want: &Stats{
+				devices: map[string]*stat{
+					"eth0": {
+						bytesIn:  0,
+						bytesOut: 20,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+				},
+			},
+		},
+		{
+			name: "unsig 32-bit rollover, in",
+			state: map[string]*deviceData{
+				"eth0": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     maxVal32 - 10,
+					lastBytesOut:    0,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  10,
+					currentBytesOut: 0,
+				},
+			},
+			want: &Stats{
+				devices: map[string]*stat{
+					"eth0": {
+						bytesIn:  20,
+						bytesOut: 0,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+				},
+			},
+		},
+		{
+			name: "unsig 32-bit rollover, out",
+			state: map[string]*deviceData{
+				"eth0": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     0,
+					lastBytesOut:    maxVal32 - 10,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  0,
+					currentBytesOut: 10,
+				},
+			},
+			want: &Stats{
+				devices: map[string]*stat{
+					"eth0": {
+						bytesIn:  0,
+						bytesOut: 20,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+				},
+			},
+		},
+		{
+			name: "unsig 32-bit rollover, out, w/ another 64-bit device",
+			state: map[string]*deviceData{
+				"eth0-32": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     0,
+					lastBytesOut:    maxVal32 - 10,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  0,
+					currentBytesOut: 10,
+				},
+				"eth1-64": {
+					lastTime:        time.Unix(1, 0),
+					lastBytesIn:     0,
+					lastBytesOut:    maxVal32 * 2,
+					currentTime:     time.Unix(2, 0),
+					currentBytesIn:  0,
+					currentBytesOut: maxVal32*2 + 10,
+				},
+			},
+			want: &Stats{
+				devices: map[string]*stat{
+					"eth0-32": {
+						bytesIn:  0,
+						bytesOut: 20,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+					"eth1-64": {
+						bytesIn:  0,
+						bytesOut: 10,
+						elapsed:  time.Unix(2, 0).Sub(time.Unix(1, 0)),
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			l := &Linux{
-				devices: test.state,
-			}
+			l := NewLinux()
+			l.devices = test.state
+
 			got := l.stats()
 
 			o := []cmp.Option{

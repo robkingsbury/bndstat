@@ -2,6 +2,7 @@ package throughput
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -9,11 +10,11 @@ import (
 type Unit int
 
 const (
-	Bps  Unit = 1
-	Kbps Unit = 10
-	Mbps Unit = 20
-	Gbps Unit = 30
-	Tbps Unit = 40
+	Bps Unit = iota
+	Kbps
+	Mbps
+	Gbps
+	Tbps
 )
 
 var allUnits = []Unit{Bps, Kbps, Mbps, Gbps, Tbps}
@@ -21,6 +22,8 @@ var allUnits = []Unit{Bps, Kbps, Mbps, Gbps, Tbps}
 // String implements Stringer for a Unit.
 func (u Unit) String() string {
 	switch u {
+	case Bps:
+		return "bps"
 	case Kbps:
 		return "kbps"
 	case Mbps:
@@ -30,11 +33,11 @@ func (u Unit) String() string {
 	case Tbps:
 		return "tbps"
 	default:
-		return "bps"
+		return "unk"
 	}
 }
 
-// ParseUnit returns the Unit associated with the input. Use the string form
+// ParseUnit returns the Unit associated with a unit name. Use the string form
 // of the const name for the unit that you want. Parsing is not case sensitive.
 // For example, an input of "Bps" or "bps", will return the unit Bps, "Mbps",
 // "mbps", or "mBps" will return the Mbps unit, etc.
@@ -55,4 +58,14 @@ func ParseUnit(u string) (Unit, error) {
 	}
 
 	return Bps, fmt.Errorf("could not parse %q into a Unit", u)
+}
+
+// Base2 returns two raised to the power of the unit.
+func (u Unit) Base2() float64 {
+	return math.Pow(2, float64(u*10))
+}
+
+// Base10 returns ten raised to the power of the unit.
+func (u Unit) Base10() float64 {
+	return math.Pow(10, float64(u*3))
 }
