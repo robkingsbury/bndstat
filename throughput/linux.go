@@ -16,7 +16,6 @@ import (
 
 var maxVal32 = uint64(math.Pow(2, 32))
 var maxVal64 = uint64(math.Pow(2, 64))
-var tbps = math.Pow(2, float64(Tbps))
 
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
@@ -80,7 +79,7 @@ func (l *Linux) Report() (*Stats, error) {
 		switch {
 
 		// 1 Tbps is faster than any hardware as of 2020.
-		case in > tbps || out > tbps:
+		case in > Tbps.Base2() || out > Tbps.Base2():
 			glog.Warningf("Triggering data dump because very large rate found")
 			trigger = true
 

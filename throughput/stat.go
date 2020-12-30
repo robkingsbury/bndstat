@@ -2,7 +2,6 @@ package throughput
 
 import (
 	"fmt"
-	"math"
 	"time"
 )
 
@@ -48,7 +47,7 @@ func (s *Stats) Avg(device string, unit Unit) (in float64, out float64, err erro
 		return 0, 0, fmt.Errorf("device, %s, not found", device)
 	}
 
-	div := math.Pow(2, float64(unit))
+	div := unit.Base2()
 	in = (float64(stat.bytesIn*8) / div) / stat.elapsed.Seconds()
 	out = (float64(stat.bytesOut*8) / div) / stat.elapsed.Seconds()
 	return in, out, nil
