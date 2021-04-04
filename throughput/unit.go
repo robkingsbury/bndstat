@@ -57,7 +57,7 @@ func ParseUnit(u string) (Unit, error) {
 		return Tbps, nil
 	}
 
-	return Bps, fmt.Errorf("could not parse %q into a Unit", u)
+	return Bps, fmt.Errorf("%q is not a valid unit, use one of: bps, kbps, mbps, gbps or tbps", u)
 }
 
 // Base2 returns the base 2 value of the unit.
