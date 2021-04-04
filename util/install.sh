@@ -1,7 +1,20 @@
 #!/bin/bash
 
+# When tagging a commit, the git tag has to be faked so that the tagged commit
+# includes a README with the correct tag. Other than preparing a tagged commit,
+# providing a tag from the cmdline should not be used.
+version=""
+tags=""
+if [[ ${1} != "" ]]; then
+  echo "Forcing tag to ${1}"
+  version=${1}
+  tags=${1}
+fi
+
 # Get the latest semver tag to set the version
-version=$(git tag --sort=-v:refname | head -1)
+if [[ ${version} == "" ]]; then
+  version=$(git tag --sort=-v:refname | head -1)
+fi
 echo "Version: ${version}"
 
 # Get current commit's short hash
@@ -9,7 +22,9 @@ commit=$(git rev-parse --short HEAD)
 echo "Current commit: ${commit}"
 
 # Get any tags for the current commit if they exist
-tags=$(git tag --points-at ${commit})
+if [[ ${tags} == "" ]]; then
+  tags=$(git tag --points-at ${commit})
+fi
 echo "Current Commit Tags: ${tags}"
 
 # What time is it?

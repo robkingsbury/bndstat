@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ ${1} == "" ]]; then
+  echo "Tag needs to be provided"
+  exit 1
+fi
+
 template="README.template.md"
 readme="../README.md"
 
@@ -40,7 +45,7 @@ substitute() {
 # Rebuild the binary just in case something has been updated and should be
 # reflected in the output.
 echo "Building the binary ..."
-./install.sh
+./install.sh ${1}
 
 t=$(cat ${template})
 
