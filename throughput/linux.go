@@ -6,6 +6,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -98,7 +99,7 @@ func (l *Linux) Report() (*Stats, error) {
 		}
 	}
 
-	return l.stats(), nil
+	return stats, nil
 }
 
 // dumpRawText logs the raw text from /proc/net/dev for each device.
@@ -146,7 +147,17 @@ func (l *Linux) stats() *Stats {
 		devices: map[string]*stat{},
 	}
 
-	for device, data := range l.devices {
+	// Though it doesn't matter for populating the Stats struct, sorting
+	// makes the V(2) info logs consistent.
+	devices := []string{}
+	for device := range l.devices {
+		devices = append(devices, device)
+	}
+	sort.Strings(devices)
+
+	for _, device := range devices {
+		data := l.devices[device]
+
 		// Record maxCounter if any counter is the biggest we've seen yet.
 		if data.currentBytesIn > data.maxCounter {
 			data.maxCounter = data.currentBytesIn
