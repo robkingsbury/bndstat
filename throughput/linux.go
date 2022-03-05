@@ -48,7 +48,7 @@ type singleRead struct {
 	rawText  string
 }
 
-// NewLinux returns a pointer to an initialized Linux.
+// NewLinux returns a pointer to an initialized Linux Reporter.
 func NewLinux() *Linux {
 	return &Linux{devices: map[string]*deviceData{}}
 }
