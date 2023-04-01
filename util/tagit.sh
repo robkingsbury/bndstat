@@ -21,3 +21,8 @@ echo "[tagit] Commiting changes and tagging as ${1}"
 git add ..
 git commit -m "Tagging ${1}"
 git tag ${1}
+
+echo
+echo "[tagit] Pushing"
+git push
+git push ${1}
