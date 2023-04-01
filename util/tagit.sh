@@ -25,4 +25,4 @@ git tag ${1}
 echo
 echo "[tagit] Pushing"
 git push
-git push ${1}
+git push origin ${1}
