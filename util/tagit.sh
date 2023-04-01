@@ -5,12 +5,15 @@ if [[ ${1} == "" ]]; then
   exit 1
 fi
 
-echo Fixing formatting if needed
+echo "[tagit] Running gofmt"
 pushd ..
 find . -name \*.go -exec gofmt -l -w -s {} \;
 popd
 
+echo "[tagit] Generating README"
 ./genreadme.sh ${1}
-git add ../README.md
+
+echo "[tagit] Commiting changes and tagging as ${1}"
+git add ..
 git commit -m "Tagging ${1}"
 git tag ${1}

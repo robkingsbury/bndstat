@@ -65,7 +65,7 @@ func (l *Linux) Report() (*Stats, error) {
 	if err != nil {
 		return &Stats{}, err
 	}
-  p.Close()
+	p.Close()
 
 	l.update(srs, time.Now())
 	stats := l.stats()
