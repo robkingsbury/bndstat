@@ -240,7 +240,7 @@ func printVersionInfo() {
 	v += fmt.Sprintf("Commit: %s%s\n", noSet(commit), noSetTags(tags))
 	v += fmt.Sprintf("Compiled: %s\n", noSet(compileTime))
 	v += fmt.Sprintf("Build Host: %s\n", noSet(buildHost))
-	v += fmt.Sprintf("Build Version: %s\n", buildVersion)
+	v += fmt.Sprintf("Go Build Version: %s\n", buildVersion)
 	fmt.Printf("%s", v)
 }
 
