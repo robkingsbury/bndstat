@@ -3,11 +3,11 @@
 //
 // Quick start:
 //
-//    $ git clone https://github.com/robkingsbury/bndstat
-//    $ cd bndstat/util
-//    $ ./install.sh
-//    $ bndstat
-//    $ bndstat --help
+//	$ git clone https://github.com/robkingsbury/bndstat
+//	$ cd bndstat/util
+//	$ ./install.sh
+//	$ bndstat
+//	$ bndstat --help
 //
 // See https://github.com/robkingsbury/bndstat for full documentation on
 // building and using the tool.
@@ -17,6 +17,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime/debug"
 	"sort"
 	"strconv"
 	"strings"
@@ -227,12 +228,19 @@ func devices(statDevices []string) []string {
 }
 
 func printVersionInfo() {
+	buildVersion := "unknown"
+	buildInfo, ok := debug.ReadBuildInfo()
+	if ok {
+		buildVersion = buildInfo.GoVersion
+	}
+
 	v := fmt.Sprintf("bndstat %s\n", version)
 	v += "Rob Kingsbury\n"
 	v += "https://github.com/robkingsbury/bndstat\n"
 	v += fmt.Sprintf("Commit: %s%s\n", noSet(commit), noSetTags(tags))
 	v += fmt.Sprintf("Compiled: %s\n", noSet(compileTime))
 	v += fmt.Sprintf("Build Host: %s\n", noSet(buildHost))
+	v += fmt.Sprintf("Build Version: %s\n", buildVersion)
 	fmt.Printf("%s", v)
 }
 
