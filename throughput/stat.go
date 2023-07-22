@@ -8,7 +8,8 @@ import (
 // stat reports data on how much traffic has passed through a network device.
 //
 // TODO: add methods to extract timestamp and elapsed time, maybe include both
-//       start and end timestamps?
+//
+//	start and end timestamps?
 type stat struct {
 	// bytesIn is the count of inbound Bytes that passed through the interface
 	// since the last innvocation of Report().

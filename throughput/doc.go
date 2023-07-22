@@ -1,40 +1,41 @@
 // Package throughput provides an interface and implementations of that
 // interface to read the throughput of network devices.
 //
-// Synopsis
+// # Synopsis
 //
 // A brief example of using the package to print throughput stats:
-//   package main
 //
-//   import (
-//     "fmt"
-//     "github.com/robkingsbury/bndstat/throughput"
-//     "time"
-//   )
+//	package main
 //
-//   func main() {
-//     // Throwing away errors is bad practice but is done here for brevity.
-//     reporter, _ := throughput.NewReporter()
-//     table := throughput.NewTable()
+//	import (
+//	  "fmt"
+//	  "github.com/robkingsbury/bndstat/throughput"
+//	  "time"
+//	)
 //
-//     for {
-//       stats, _ := reporter.Report()
+//	func main() {
+//	  // Throwing away errors is bad practice but is done here for brevity.
+//	  reporter, _ := throughput.NewReporter()
+//	  table := throughput.NewTable()
 //
-//       // Directly accessing device stats
-//       for _, device := range stats.Devices() {
-//         in, out, _ := stats.Avg(device, throughput.Kbps)
-//         fmt.Printf("%s: in = %.2f, out = %.2f\n", device, in, out)
-//       }
+//	  for {
+//	    stats, _ := reporter.Report()
 //
-//       // Using the builtin, aligned table output
-//       table.Write(throughput.TableWriteOpts{
-//         Stats:    stats,
-//         Devices:  stats.Devices(),
-//         Unit:     throughput.Kbps,
-//         ShowUnit: false,
-//       })
+//	    // Directly accessing device stats
+//	    for _, device := range stats.Devices() {
+//	      in, out, _ := stats.Avg(device, throughput.Kbps)
+//	      fmt.Printf("%s: in = %.2f, out = %.2f\n", device, in, out)
+//	    }
 //
-//       time.Sleep(time.Second)
-//     }
-//   }
+//	    // Using the builtin, aligned table output
+//	    table.Write(throughput.TableWriteOpts{
+//	      Stats:    stats,
+//	      Devices:  stats.Devices(),
+//	      Unit:     throughput.Kbps,
+//	      ShowUnit: false,
+//	    })
+//
+//	    time.Sleep(time.Second)
+//	  }
+//	}
 package throughput
