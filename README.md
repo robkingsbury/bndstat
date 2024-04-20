@@ -22,11 +22,11 @@ $ bndstat --help
 
 ```
 $ bndstat --version
-bndstat 0.5.10
+bndstat v0.5.10
 Rob Kingsbury
 https://github.com/robkingsbury/bndstat
-Commit: 135a5c4 (0.5.10)
-Compiled: Sat 20 Apr 13:00:20 PDT 2024
+Commit: d55749c (v0.5.10)
+Compiled: Sat 20 Apr 13:20:13 PDT 2024
 Build Host: bender
 Go Build Version: go1.20.6
 ```
@@ -66,11 +66,11 @@ primary internet provider, eth2 is my backup internet line and wlan0 is a connec
 $ bndstat 3 5
               eth0                   eth1                   eth2                  wlan0     
          In         Out         In         Out         In         Out         In         Out
-    2908.46      110.27     175.06     2928.17       1.75        1.69       0.00        0.00
-    3133.88      103.10     166.76     3153.83       1.44        2.04       0.00        0.00
-    2827.76      988.41    1036.25     2847.38       2.07        1.91       0.00        0.00
-    2843.33       74.88     128.50     2861.50       1.75        1.82       0.00        0.00
-    2576.87       83.15     141.99     2594.30       1.82        2.04       0.00        0.00
+    2738.39      226.03     283.87     2756.59       1.82        2.04       0.00        0.00
+    3002.54       79.40     141.36     3021.29       1.50        1.69       0.00        0.00
+    3044.67      969.86    1020.48     3064.59       1.82        2.04       0.00        0.00
+    2522.61       68.86     134.33     2539.56       1.82        2.04       0.00        0.00
+    3171.64      106.54     167.67     3191.70       1.50        1.69       0.00        0.00
 ```
 
 Another example on the same machine, illustrating the device filter and using options instead of args for the interval and
@@ -80,11 +80,11 @@ count parameters:
 $ bndstat --devices=eth1,eth2 --interval=1 --count=5
               eth1                   eth2     
          In         Out         In         Out
-     268.38     6826.87       1.50        1.69
-      96.89      728.81       1.50        1.69
-     134.22     2830.67       1.50        1.69
-    2906.89     6714.61       2.59        3.09
-    1322.25     1067.77       1.87        2.08
+      76.12      164.13       1.50        1.69
+     163.76     2853.44       2.45        2.75
+    2840.86     6321.62       1.50        1.68
+      84.46      159.13       1.50        1.69
+     192.26     2307.95       1.50        1.68
 ```
 
 ### Debug Logging
@@ -92,136 +92,136 @@ If you want to see the innerworkings of `bndstat`, you can use options from the 
 
 ```
 $ bndstat --logtostderr --v=2 --count=1
-I0420 13:00:42.301273   26193 bndstat.go:102] interval = 1.000000, count = 1
-I0420 13:00:42.301839   26193 throughput.go:21] os is "linux"
-I0420 13:00:42.301885   26193 throughput.go:33] running Reporter.Report() twice to prime the stats
-I0420 13:00:42.301923   26193 throughput.go:35] prime 1
-I0420 13:00:42.302229   26193 linux.go:236] found device eth0
-I0420 13:00:42.302360   26193 linux.go:241] bytesRecvStr for eth0: 3987372131
-I0420 13:00:42.302408   26193 linux.go:242] bytesTransStr for eth0: 4039211551
-I0420 13:00:42.302456   26193 linux.go:236] found device eth1
-I0420 13:00:42.302497   26193 linux.go:241] bytesRecvStr for eth1: 5280281321644
-I0420 13:00:42.302539   26193 linux.go:242] bytesTransStr for eth1: 6976147925318
-I0420 13:00:42.302585   26193 linux.go:236] found device eth2
-I0420 13:00:42.302626   26193 linux.go:241] bytesRecvStr for eth2: 6972102825
-I0420 13:00:42.302666   26193 linux.go:242] bytesTransStr for eth2: 7276132774
-I0420 13:00:42.302714   26193 linux.go:236] found device wlan0
-I0420 13:00:42.302754   26193 linux.go:241] bytesRecvStr for wlan0: 0
-I0420 13:00:42.302795   26193 linux.go:242] bytesTransStr for wlan0: 0
-I0420 13:00:42.302838   26193 linux.go:236] found device lo
-I0420 13:00:42.302878   26193 linux.go:241] bytesRecvStr for lo: 12250788
-I0420 13:00:42.302918   26193 linux.go:242] bytesTransStr for lo: 12250788
-I0420 13:00:42.303018   26193 linux.go:129] updating state for eth0
-I0420 13:00:42.303057   26193 linux.go:129] updating state for eth1
-I0420 13:00:42.303091   26193 linux.go:129] updating state for eth2
-I0420 13:00:42.303124   26193 linux.go:129] updating state for wlan0
-I0420 13:00:42.303157   26193 linux.go:129] updating state for lo
-I0420 13:00:42.303234   26193 linux.go:188] eth0: max counter seen = 4039211551, max counter guess = 4294967296
-I0420 13:00:42.303302   26193 linux.go:216] eth0: in=0.0034 kbps, out=0.0034 kbps
-I0420 13:00:42.303357   26193 linux.go:188] eth1: max counter seen = 6976147925318, max counter guess = 18446744069414584320
-I0420 13:00:42.303415   26193 linux.go:216] eth1: in=4.4726 kbps, out=5.9090 kbps
-I0420 13:00:42.303464   26193 linux.go:188] eth2: max counter seen = 7276132774, max counter guess = 18446744069414584320
-I0420 13:00:42.303520   26193 linux.go:216] eth2: in=0.0059 kbps, out=0.0062 kbps
-I0420 13:00:42.303569   26193 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
-I0420 13:00:42.303624   26193 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.303673   26193 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
-I0420 13:00:42.303727   26193 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.303805   26193 throughput.go:38] prime 2
-I0420 13:00:42.304003   26193 linux.go:236] found device eth0
-I0420 13:00:42.304048   26193 linux.go:241] bytesRecvStr for eth0: 3987372131
-I0420 13:00:42.304089   26193 linux.go:242] bytesTransStr for eth0: 4039211551
-I0420 13:00:42.304135   26193 linux.go:236] found device eth1
-I0420 13:00:42.304175   26193 linux.go:241] bytesRecvStr for eth1: 5280281321692
-I0420 13:00:42.304215   26193 linux.go:242] bytesTransStr for eth1: 6976147925318
-I0420 13:00:42.304260   26193 linux.go:236] found device eth2
-I0420 13:00:42.304300   26193 linux.go:241] bytesRecvStr for eth2: 6972102825
-I0420 13:00:42.304340   26193 linux.go:242] bytesTransStr for eth2: 7276132774
-I0420 13:00:42.304386   26193 linux.go:236] found device wlan0
-I0420 13:00:42.304426   26193 linux.go:241] bytesRecvStr for wlan0: 0
-I0420 13:00:42.304467   26193 linux.go:242] bytesTransStr for wlan0: 0
-I0420 13:00:42.304512   26193 linux.go:236] found device lo
-I0420 13:00:42.304551   26193 linux.go:241] bytesRecvStr for lo: 12250788
-I0420 13:00:42.304593   26193 linux.go:242] bytesTransStr for lo: 12250788
-I0420 13:00:42.304670   26193 linux.go:129] updating state for eth0
-I0420 13:00:42.304706   26193 linux.go:129] updating state for eth1
-I0420 13:00:42.304739   26193 linux.go:129] updating state for eth2
-I0420 13:00:42.304771   26193 linux.go:129] updating state for wlan0
-I0420 13:00:42.304804   26193 linux.go:129] updating state for lo
-I0420 13:00:42.304849   26193 linux.go:188] eth0: max counter seen = 4039211551, max counter guess = 4294967296
-I0420 13:00:42.304901   26193 linux.go:216] eth0: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.304946   26193 linux.go:188] eth1: max counter seen = 6976147925318, max counter guess = 18446744069414584320
-I0420 13:00:42.305032   26193 linux.go:216] eth1: in=226.8404 kbps, out=0.0000 kbps
-I0420 13:00:42.305082   26193 linux.go:188] eth2: max counter seen = 7276132774, max counter guess = 18446744069414584320
-I0420 13:00:42.305133   26193 linux.go:216] eth2: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.305176   26193 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
-I0420 13:00:42.305224   26193 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.305266   26193 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
-I0420 13:00:42.305314   26193 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.305568   26193 linux.go:236] found device eth0
-I0420 13:00:42.305612   26193 linux.go:241] bytesRecvStr for eth0: 3987372131
-I0420 13:00:42.305653   26193 linux.go:242] bytesTransStr for eth0: 4039211551
-I0420 13:00:42.305700   26193 linux.go:236] found device eth1
-I0420 13:00:42.305740   26193 linux.go:241] bytesRecvStr for eth1: 5280281321692
-I0420 13:00:42.305781   26193 linux.go:242] bytesTransStr for eth1: 6976147925318
-I0420 13:00:42.305827   26193 linux.go:236] found device eth2
-I0420 13:00:42.305867   26193 linux.go:241] bytesRecvStr for eth2: 6972102825
-I0420 13:00:42.305907   26193 linux.go:242] bytesTransStr for eth2: 7276132774
-I0420 13:00:42.305954   26193 linux.go:236] found device wlan0
-I0420 13:00:42.305993   26193 linux.go:241] bytesRecvStr for wlan0: 0
-I0420 13:00:42.306034   26193 linux.go:242] bytesTransStr for wlan0: 0
-I0420 13:00:42.306240   26193 linux.go:236] found device lo
-I0420 13:00:42.306284   26193 linux.go:241] bytesRecvStr for lo: 12250788
-I0420 13:00:42.306325   26193 linux.go:242] bytesTransStr for lo: 12250788
-I0420 13:00:42.306407   26193 linux.go:129] updating state for eth0
-I0420 13:00:42.306443   26193 linux.go:129] updating state for eth1
-I0420 13:00:42.306476   26193 linux.go:129] updating state for eth2
-I0420 13:00:42.306508   26193 linux.go:129] updating state for wlan0
-I0420 13:00:42.306540   26193 linux.go:129] updating state for lo
-I0420 13:00:42.306588   26193 linux.go:188] eth0: max counter seen = 4039211551, max counter guess = 4294967296
-I0420 13:00:42.306645   26193 linux.go:216] eth0: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.306691   26193 linux.go:188] eth1: max counter seen = 6976147925318, max counter guess = 18446744069414584320
-I0420 13:00:42.306741   26193 linux.go:216] eth1: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.306784   26193 linux.go:188] eth2: max counter seen = 7276132774, max counter guess = 18446744069414584320
-I0420 13:00:42.306833   26193 linux.go:216] eth2: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.306875   26193 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
-I0420 13:00:42.306923   26193 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:42.306983   26193 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
-I0420 13:00:42.307033   26193 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.349868   26925 bndstat.go:102] interval = 1.000000, count = 1
+I0420 13:20:34.350438   26925 throughput.go:21] os is "linux"
+I0420 13:20:34.350484   26925 throughput.go:33] running Reporter.Report() twice to prime the stats
+I0420 13:20:34.350523   26925 throughput.go:35] prime 1
+I0420 13:20:34.350828   26925 linux.go:236] found device eth0
+I0420 13:20:34.350875   26925 linux.go:241] bytesRecvStr for eth0: 148995683
+I0420 13:20:34.350918   26925 linux.go:242] bytesTransStr for eth0: 4130769180
+I0420 13:20:34.350966   26925 linux.go:236] found device eth1
+I0420 13:20:34.351006   26925 linux.go:241] bytesRecvStr for eth1: 5280381566757
+I0420 13:20:34.351048   26925 linux.go:242] bytesTransStr for eth1: 6976607489820
+I0420 13:20:34.351093   26925 linux.go:236] found device eth2
+I0420 13:20:34.351134   26925 linux.go:241] bytesRecvStr for eth2: 6972364709
+I0420 13:20:34.351174   26925 linux.go:242] bytesTransStr for eth2: 7276427040
+I0420 13:20:34.351221   26925 linux.go:236] found device wlan0
+I0420 13:20:34.351261   26925 linux.go:241] bytesRecvStr for wlan0: 0
+I0420 13:20:34.351302   26925 linux.go:242] bytesTransStr for wlan0: 0
+I0420 13:20:34.351345   26925 linux.go:236] found device lo
+I0420 13:20:34.351385   26925 linux.go:241] bytesRecvStr for lo: 12250788
+I0420 13:20:34.351428   26925 linux.go:242] bytesTransStr for lo: 12250788
+I0420 13:20:34.351517   26925 linux.go:129] updating state for eth0
+I0420 13:20:34.351556   26925 linux.go:129] updating state for eth1
+I0420 13:20:34.351590   26925 linux.go:129] updating state for eth2
+I0420 13:20:34.351623   26925 linux.go:129] updating state for wlan0
+I0420 13:20:34.351674   26925 linux.go:129] updating state for lo
+I0420 13:20:34.351728   26925 linux.go:188] eth0: max counter seen = 4130769180, max counter guess = 4294967296
+I0420 13:20:34.351796   26925 linux.go:216] eth0: in=0.0001 kbps, out=0.0035 kbps
+I0420 13:20:34.351852   26925 linux.go:188] eth1: max counter seen = 6976607489820, max counter guess = 18446744069414584320
+I0420 13:20:34.351909   26925 linux.go:216] eth1: in=4.4727 kbps, out=5.9094 kbps
+I0420 13:20:34.351957   26925 linux.go:188] eth2: max counter seen = 7276427040, max counter guess = 18446744069414584320
+I0420 13:20:34.352013   26925 linux.go:216] eth2: in=0.0059 kbps, out=0.0062 kbps
+I0420 13:20:34.352062   26925 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
+I0420 13:20:34.352117   26925 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.352165   26925 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
+I0420 13:20:34.352220   26925 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.352298   26925 throughput.go:38] prime 2
+I0420 13:20:34.352493   26925 linux.go:236] found device eth0
+I0420 13:20:34.352536   26925 linux.go:241] bytesRecvStr for eth0: 148995683
+I0420 13:20:34.352579   26925 linux.go:242] bytesTransStr for eth0: 4130769180
+I0420 13:20:34.352625   26925 linux.go:236] found device eth1
+I0420 13:20:34.352666   26925 linux.go:241] bytesRecvStr for eth1: 5280381566757
+I0420 13:20:34.352707   26925 linux.go:242] bytesTransStr for eth1: 6976607489820
+I0420 13:20:34.352752   26925 linux.go:236] found device eth2
+I0420 13:20:34.352793   26925 linux.go:241] bytesRecvStr for eth2: 6972364709
+I0420 13:20:34.352833   26925 linux.go:242] bytesTransStr for eth2: 7276427040
+I0420 13:20:34.352879   26925 linux.go:236] found device wlan0
+I0420 13:20:34.352919   26925 linux.go:241] bytesRecvStr for wlan0: 0
+I0420 13:20:34.352961   26925 linux.go:242] bytesTransStr for wlan0: 0
+I0420 13:20:34.353005   26925 linux.go:236] found device lo
+I0420 13:20:34.353045   26925 linux.go:241] bytesRecvStr for lo: 12250788
+I0420 13:20:34.353086   26925 linux.go:242] bytesTransStr for lo: 12250788
+I0420 13:20:34.353162   26925 linux.go:129] updating state for eth0
+I0420 13:20:34.353199   26925 linux.go:129] updating state for eth1
+I0420 13:20:34.353232   26925 linux.go:129] updating state for eth2
+I0420 13:20:34.353263   26925 linux.go:129] updating state for wlan0
+I0420 13:20:34.353295   26925 linux.go:129] updating state for lo
+I0420 13:20:34.353340   26925 linux.go:188] eth0: max counter seen = 4130769180, max counter guess = 4294967296
+I0420 13:20:34.353392   26925 linux.go:216] eth0: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.353473   26925 linux.go:188] eth1: max counter seen = 6976607489820, max counter guess = 18446744069414584320
+I0420 13:20:34.353528   26925 linux.go:216] eth1: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.353572   26925 linux.go:188] eth2: max counter seen = 7276427040, max counter guess = 18446744069414584320
+I0420 13:20:34.353621   26925 linux.go:216] eth2: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.353663   26925 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
+I0420 13:20:34.353711   26925 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.353753   26925 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
+I0420 13:20:34.353801   26925 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.354052   26925 linux.go:236] found device eth0
+I0420 13:20:34.354095   26925 linux.go:241] bytesRecvStr for eth0: 148995683
+I0420 13:20:34.354136   26925 linux.go:242] bytesTransStr for eth0: 4130769180
+I0420 13:20:34.354183   26925 linux.go:236] found device eth1
+I0420 13:20:34.354223   26925 linux.go:241] bytesRecvStr for eth1: 5280381566757
+I0420 13:20:34.354264   26925 linux.go:242] bytesTransStr for eth1: 6976607489820
+I0420 13:20:34.354310   26925 linux.go:236] found device eth2
+I0420 13:20:34.354349   26925 linux.go:241] bytesRecvStr for eth2: 6972364709
+I0420 13:20:34.354389   26925 linux.go:242] bytesTransStr for eth2: 7276427040
+I0420 13:20:34.354436   26925 linux.go:236] found device wlan0
+I0420 13:20:34.354477   26925 linux.go:241] bytesRecvStr for wlan0: 0
+I0420 13:20:34.354518   26925 linux.go:242] bytesTransStr for wlan0: 0
+I0420 13:20:34.354563   26925 linux.go:236] found device lo
+I0420 13:20:34.354603   26925 linux.go:241] bytesRecvStr for lo: 12250788
+I0420 13:20:34.354644   26925 linux.go:242] bytesTransStr for lo: 12250788
+I0420 13:20:34.354729   26925 linux.go:129] updating state for eth0
+I0420 13:20:34.354765   26925 linux.go:129] updating state for eth1
+I0420 13:20:34.354797   26925 linux.go:129] updating state for eth2
+I0420 13:20:34.354829   26925 linux.go:129] updating state for wlan0
+I0420 13:20:34.354861   26925 linux.go:129] updating state for lo
+I0420 13:20:34.354907   26925 linux.go:188] eth0: max counter seen = 4130769180, max counter guess = 4294967296
+I0420 13:20:34.354959   26925 linux.go:216] eth0: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.355003   26925 linux.go:188] eth1: max counter seen = 6976607489820, max counter guess = 18446744069414584320
+I0420 13:20:34.355052   26925 linux.go:216] eth1: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.355094   26925 linux.go:188] eth2: max counter seen = 7276427040, max counter guess = 18446744069414584320
+I0420 13:20:34.355143   26925 linux.go:216] eth2: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.355185   26925 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
+I0420 13:20:34.355250   26925 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:34.355294   26925 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
+I0420 13:20:34.355343   26925 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
               eth0                   eth1                   eth2                  wlan0     
          In         Out         In         Out         In         Out         In         Out
-I0420 13:00:43.307649   26193 linux.go:236] found device eth0
-I0420 13:00:43.307712   26193 linux.go:241] bytesRecvStr for eth0: 3987853731
-I0420 13:00:43.307758   26193 linux.go:242] bytesTransStr for eth0: 4039241860
-I0420 13:00:43.307809   26193 linux.go:236] found device eth1
-I0420 13:00:43.307851   26193 linux.go:241] bytesRecvStr for eth1: 5280281358747
-I0420 13:00:43.307893   26193 linux.go:242] bytesTransStr for eth1: 6976148410102
-I0420 13:00:43.307941   26193 linux.go:236] found device eth2
-I0420 13:00:43.307981   26193 linux.go:241] bytesRecvStr for eth2: 6972103017
-I0420 13:00:43.308023   26193 linux.go:242] bytesTransStr for eth2: 7276132990
-I0420 13:00:43.308070   26193 linux.go:236] found device wlan0
-I0420 13:00:43.308110   26193 linux.go:241] bytesRecvStr for wlan0: 0
-I0420 13:00:43.308149   26193 linux.go:242] bytesTransStr for wlan0: 0
-I0420 13:00:43.308194   26193 linux.go:236] found device lo
-I0420 13:00:43.308234   26193 linux.go:241] bytesRecvStr for lo: 12250788
-I0420 13:00:43.308275   26193 linux.go:242] bytesTransStr for lo: 12250788
-I0420 13:00:43.308363   26193 linux.go:129] updating state for eth0
-I0420 13:00:43.308401   26193 linux.go:129] updating state for eth1
-I0420 13:00:43.308434   26193 linux.go:129] updating state for eth2
-I0420 13:00:43.308467   26193 linux.go:129] updating state for wlan0
-I0420 13:00:43.308498   26193 linux.go:129] updating state for lo
-I0420 13:00:43.308595   26193 linux.go:188] eth0: max counter seen = 4039241860, max counter guess = 4294967296
-I0420 13:00:43.308659   26193 linux.go:216] eth0: in=3755.1614 kbps, out=236.3272 kbps
-I0420 13:00:43.308714   26193 linux.go:188] eth1: max counter seen = 6976148410102, max counter guess = 18446744069414584320
-I0420 13:00:43.308766   26193 linux.go:216] eth1: in=288.9275 kbps, out=3779.9879 kbps
-I0420 13:00:43.308814   26193 linux.go:188] eth2: max counter seen = 7276132990, max counter guess = 18446744069414584320
-I0420 13:00:43.308866   26193 linux.go:216] eth2: in=1.4971 kbps, out=1.6842 kbps
-I0420 13:00:43.308914   26193 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
-I0420 13:00:43.308963   26193 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:43.309005   26193 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
-I0420 13:00:43.309055   26193 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
-I0420 13:00:43.309130   26193 table.go:58] rows = 40, tableLineCount = 2
-I0420 13:00:43.309173   26193 table.go:69] tableLineCount = 2, rows-3 = 37
-    3755.16      236.33     288.93     3779.99       1.50        1.68       0.00        0.00
+I0420 13:20:35.356482   26925 linux.go:236] found device eth0
+I0420 13:20:35.356544   26925 linux.go:241] bytesRecvStr for eth0: 149790460
+I0420 13:20:35.356590   26925 linux.go:242] bytesTransStr for eth0: 4130789475
+I0420 13:20:35.356643   26925 linux.go:236] found device eth1
+I0420 13:20:35.356685   26925 linux.go:241] bytesRecvStr for eth1: 5280381593142
+I0420 13:20:35.356726   26925 linux.go:242] bytesTransStr for eth1: 6976608289219
+I0420 13:20:35.356775   26925 linux.go:236] found device eth2
+I0420 13:20:35.356815   26925 linux.go:241] bytesRecvStr for eth2: 6972364901
+I0420 13:20:35.356856   26925 linux.go:242] bytesTransStr for eth2: 7276427256
+I0420 13:20:35.356904   26925 linux.go:236] found device wlan0
+I0420 13:20:35.356944   26925 linux.go:241] bytesRecvStr for wlan0: 0
+I0420 13:20:35.356986   26925 linux.go:242] bytesTransStr for wlan0: 0
+I0420 13:20:35.357029   26925 linux.go:236] found device lo
+I0420 13:20:35.357068   26925 linux.go:241] bytesRecvStr for lo: 12250788
+I0420 13:20:35.357109   26925 linux.go:242] bytesTransStr for lo: 12250788
+I0420 13:20:35.357196   26925 linux.go:129] updating state for eth0
+I0420 13:20:35.357249   26925 linux.go:129] updating state for eth1
+I0420 13:20:35.357283   26925 linux.go:129] updating state for eth2
+I0420 13:20:35.357316   26925 linux.go:129] updating state for wlan0
+I0420 13:20:35.357348   26925 linux.go:129] updating state for lo
+I0420 13:20:35.357400   26925 linux.go:188] eth0: max counter seen = 4130789475, max counter guess = 4294967296
+I0420 13:20:35.357475   26925 linux.go:216] eth0: in=6193.9255 kbps, out=158.1648 kbps
+I0420 13:20:35.357532   26925 linux.go:188] eth1: max counter seen = 6976608289219, max counter guess = 18446744069414584320
+I0420 13:20:35.357584   26925 linux.go:216] eth1: in=205.6259 kbps, out=6229.9461 kbps
+I0420 13:20:35.357632   26925 linux.go:188] eth2: max counter seen = 7276427256, max counter guess = 18446744069414584320
+I0420 13:20:35.357683   26925 linux.go:216] eth2: in=1.4963 kbps, out=1.6834 kbps
+I0420 13:20:35.357731   26925 linux.go:188] lo: max counter seen = 12250788, max counter guess = 4294967296
+I0420 13:20:35.357780   26925 linux.go:216] lo: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:35.357822   26925 linux.go:188] wlan0: max counter seen = 0, max counter guess = 4294967296
+I0420 13:20:35.357871   26925 linux.go:216] wlan0: in=0.0000 kbps, out=0.0000 kbps
+I0420 13:20:35.357947   26925 table.go:58] rows = 40, tableLineCount = 2
+I0420 13:20:35.357990   26925 table.go:69] tableLineCount = 2, rows-3 = 37
+    6193.93      158.16     205.63     6229.95       1.50        1.68       0.00        0.00
 ```
 
 ## Throughput Package
