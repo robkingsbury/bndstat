@@ -18,6 +18,11 @@ import (
 var maxVal32 = uint64(math.Pow(2, 32))
 var maxVal64 = uint64(math.Pow(2, 64))
 
+// shiftSize defines how much raw text history is kept in memory. See
+// dumpRawText(), which is used for debugging when a bad data rate is
+// seen. This value must be 1 or greater, else the compiling will fail.
+const shiftSize = 4
+
 // Linux implements the Reporter interface for linux systems.
 type Linux struct {
 	devices map[string]*deviceData
@@ -262,7 +267,6 @@ func parseNetDev(i io.Reader) ([]*singleRead, error) {
 	return srs, nil
 }
 
-const shiftSize = 4
 
 // Shift raw data: 0 is latest, shiftSize is the earliest.
 func (d *deviceData) shiftRawText() {
