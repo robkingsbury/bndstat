@@ -267,7 +267,6 @@ func parseNetDev(i io.Reader) ([]*singleRead, error) {
 	return srs, nil
 }
 
-
 // Shift raw data: 0 is latest, shiftSize is the earliest.
 func (d *deviceData) shiftRawText() {
 	for i := shiftSize - 1; i > 0; i-- {
