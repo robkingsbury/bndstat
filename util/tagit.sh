@@ -5,6 +5,13 @@ if [[ ${1} == "" ]]; then
   exit 1
 fi
 
+# Check the format of the tag.
+TAG_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+$'
+if ! [[ ${1} =~ ${TAG_REGEX} ]]; then
+  echo "Tag needs to be in v##.##.## format"
+  exit 1
+fi
+
 echo "[tagit] Running gofmt"
 echo -n "pushd: "
 pushd ..
